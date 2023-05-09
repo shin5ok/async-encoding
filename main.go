@@ -120,7 +120,7 @@ func register2DB(data params) error {
 	return nil
 }
 
-func downloadFile(bucket, object string, destFileName string) error {
+func downloadFile(bucket, object string, dst string) error {
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx)
 	if err != nil {
@@ -131,7 +131,7 @@ func downloadFile(bucket, object string, destFileName string) error {
 	ctx, cancel := context.WithTimeout(ctx, time.Second*50)
 	defer cancel()
 
-	f, err := os.Create(destFileName)
+	f, err := os.Create(dst)
 	if err != nil {
 		return fmt.Errorf("os.Create: %v", err)
 	}
