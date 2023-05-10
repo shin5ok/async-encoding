@@ -104,7 +104,7 @@ func doConvert(ctx context.Context, msg *pubsub.Message) {
 		return
 	}
 
-	go uploadFile(bucketName, dstTmp, dst)
+	uploadFile(bucketName, dstTmp, dst)
 
 	outFile := fmt.Sprintf("gs://%s/%s", bucketName, dst)
 	log.Println("out", outFile)
