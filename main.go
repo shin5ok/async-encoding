@@ -22,7 +22,10 @@ var (
 )
 
 func main() {
-	pullAndConvert(projectID, subscName)
+	err := pullAndConvert(projectID, subscName)
+	if err != nil {
+		log.Panicln(err)
+	}
 }
 
 func pullAndConvert(projectID, subscName string) error {
@@ -87,7 +90,7 @@ func doConvert(ctx context.Context, msg *pubsub.Message) {
 		log.Println("cleanup", srcTmp, dstTmp)
 	}()
 
-	fmt.Printf("%+v\n", data)
+	log.Printf("%+v\n", data)
 	first, err := moviego.Load(srcTmp)
 
 	if err != nil {
