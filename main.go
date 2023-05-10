@@ -35,8 +35,8 @@ func pullAndConvert(projectID, subscName string) error {
 
 	sub := client.Subscription(subscName)
 	sub.ReceiveSettings.Synchronous = false
-	//sub.ReceiveSettings.NumGoroutines = 16
-	//sub.ReceiveSettings.MaxOutstandingMessages = 8
+	// sub.ReceiveSettings.NumGoroutines = 2
+	sub.ReceiveSettings.MaxOutstandingMessages = 1 //
 
 	// ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	// defer cancel()
@@ -61,42 +61,47 @@ type params struct {
 
 func doConvert(ctx context.Context, msg *pubsub.Message) {
 
+	log.Printf("Start processing id %s\n", msg.ID)
+
 	var data params
 	if err := json.Unmarshal(msg.Data, &data); err != nil {
-		log.Println(err)
+		log.Println("json error", err)
+		msg.Ack()
 		return
 	}
 
 	src := data.Src
 	dst := data.Dst
+	srcTmp := msg.ID + src
+	dstTmp := msg.ID + dst
 
-	err := downloadFile(bucketName, src, src)
+	err := downloadFile(bucketName, src, srcTmp)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
 	defer func() {
-		os.Remove(src)
-		os.Remove(dst)
-		log.Println("cleanup", src, dst)
+		os.Remove(srcTmp)
+		os.Remove(dstTmp)
+		log.Println("cleanup", srcTmp, dstTmp)
 	}()
 
 	fmt.Printf("%+v\n", data)
-	first, err := moviego.Load(src)
+	first, err := moviego.Load(srcTmp)
 
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	err = first.SubClip(data.Start, data.End).Output(dst).Run()
+	err = first.SubClip(data.Start, data.End).Output(dstTmp).Run()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return
 	}
 
-	go uploadFile(bucketName, dst, dst)
+	go uploadFile(bucketName, dstTmp, dst)
 
 	outFile := fmt.Sprintf("gs://%s/%s", bucketName, dst)
 	log.Println("out", outFile)
