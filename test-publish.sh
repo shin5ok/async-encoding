@@ -1,7 +1,7 @@
 
 while :
 do
-    if which uuid
+    if which uuid > /dev/null;
     then
         uuid=`uuid`
     else
