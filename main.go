@@ -36,7 +36,7 @@ func pullAndConvert(projectID, subscName string) error {
 	sub := client.Subscription(subscName)
 	sub.ReceiveSettings.Synchronous = false
 	// sub.ReceiveSettings.NumGoroutines = 2
-	sub.ReceiveSettings.MaxOutstandingMessages = 1 //
+	sub.ReceiveSettings.MaxOutstandingMessages = 1
 
 	// ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	// defer cancel()
@@ -65,15 +65,15 @@ func doConvert(ctx context.Context, msg *pubsub.Message) {
 
 	var data params
 	if err := json.Unmarshal(msg.Data, &data); err != nil {
-		log.Println("json error", err)
-		msg.Ack()
+		log.Println("json decode error", err)
+		msg.Ack() // decode error would be critical, so should be given up
 		return
 	}
 
 	src := data.Src
 	dst := data.Dst
-	srcTmp := msg.ID + src
-	dstTmp := msg.ID + dst
+	srcTmp := msg.ID + "-" + src
+	dstTmp := msg.ID + "-" + dst
 
 	err := downloadFile(bucketName, src, srcTmp)
 	if err != nil {
@@ -174,8 +174,8 @@ func uploadFile(bucket, src, object string) error {
 	}
 	defer f.Close()
 
-	// ctx, cancel := context.WithTimeout(ctx, time.Second*50)
-	// defer cancel()
+	ctx, cancel := context.WithTimeout(ctx, time.Second*50)
+	defer cancel()
 
 	o := client.Bucket(bucket).Object(object)
 
