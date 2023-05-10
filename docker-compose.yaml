@@ -3,3 +3,11 @@ services:
   main:
     build: .
     restart: always
+    environment:
+      - GOOGLE_CLOUD_PROJECT=$GOOGLE_CLOUD_PROJECT
+      - BUCKET=$BUCKET
+      - SUBSCRIPTION=$SUBSCRIPTION
+    logging:
+      driver: gcplogs
+      options:
+        gcp-project: $GOOGLE_CLOUD_PROJECT
