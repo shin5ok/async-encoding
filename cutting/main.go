@@ -81,7 +81,7 @@ func doConvert(ctx context.Context, msg *pubsub.Message) {
 	}
 
 	src := data.Src
-	dst := fmt.Sprintf("%s-%s.mp4", data.UserID, msg.ID)
+	dst := fmt.Sprintf("%s/%s.mp4", data.UserID, msg.ID)
 	srcTmp := msg.ID + "-" + src
 	dstTmp := msg.ID + "-" + dst
 
