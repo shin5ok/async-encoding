@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net/http"
 	"os"
 	"time"
 
@@ -20,11 +21,24 @@ var (
 	subscName       = os.Getenv("SUBSCRIPTION")
 	bucketName      = os.Getenv("BUCKET")
 	firestoreClient *firestore.Client
+	myIpAddr        []byte
 )
 
 func init() {
 	ctx := context.Background()
 	firestoreClient, _ = firestore.NewClient(ctx, projectID)
+
+	httpClient := http.Client{Timeout: 2 * time.Second}
+	resp, err := httpClient.Get("http://ifconfig.me")
+	if err != nil {
+		log.Println("cannot get to external site")
+	}
+	defer resp.Body.Close()
+
+	myIpAddr, err = io.ReadAll(resp.Body)
+	if err != nil {
+		log.Println("cannot get IP")
+	}
 }
 
 func main() {
@@ -121,7 +135,7 @@ func doConvert(ctx context.Context, msg *pubsub.Message) {
 	outFile := fmt.Sprintf("gs://%s/%s", bucketName, dstFull)
 	log.Println("out", outFile)
 
-	data.ProcessHost, _ = os.Hostname()
+	data.ProcessHost = string(myIpAddr)
 	data.Dst = dstFull
 
 	err = register2DB(data)
