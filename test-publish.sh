@@ -7,7 +7,9 @@ do
     else
         uuid=`uuidgen`
     fi
-    message="{\"src\":\"test-1.mp4\",\"dst\":\"bar.mp4\",\"user_id\":\"${uuid}\",\"start\":200.0,\"end\":230.0}"
+    start=$((RANDOM % 50))
+    end=$start+5
+    message="{\"src\":\"test-1.mp4\",\"dst\":\"\",\"user_id\":\"${uuid}\",\"start\":$((start)),\"end\":$((end))}"
     echo $message
     gcloud pubsub topics publish --message=$message test
 done
