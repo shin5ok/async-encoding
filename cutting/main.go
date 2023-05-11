@@ -45,7 +45,7 @@ func pullAndConvert(projectID, subscName string) error {
 
 	sub := client.Subscription(subscName)
 	sub.ReceiveSettings.Synchronous = false
-	// sub.ReceiveSettings.NumGoroutines = 2
+	sub.ReceiveSettings.NumGoroutines = 2
 	sub.ReceiveSettings.MaxOutstandingMessages = 1
 
 	// ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
