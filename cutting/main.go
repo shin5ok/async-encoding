@@ -81,13 +81,14 @@ func doConvert(ctx context.Context, msg *pubsub.Message) {
 	}
 
 	src := data.Src
-	dst := fmt.Sprintf("%s/%s.mp4", data.UserID, msg.ID)
+	dst := msg.ID + ".mp4"
 	srcTmp := msg.ID + "-" + src
 	dstTmp := msg.ID + "-" + dst
 
 	err := downloadFile(bucketName, src, srcTmp)
 	if err != nil {
 		log.Println(err)
+		msg.Nack()
 		return
 	}
 
@@ -102,23 +103,27 @@ func doConvert(ctx context.Context, msg *pubsub.Message) {
 
 	if err != nil {
 		log.Println(err)
+		msg.Nack()
 		return
 	}
 
 	err = first.SubClip(data.Start, data.End).Output(dstTmp).Run()
 	if err != nil {
 		log.Println(err)
+		msg.Ack()
 		return
 	}
 
-	uploadFile(bucketName, dstTmp, dst)
+	dstFull := fmt.Sprintf("%s/%s.mp4", data.UserID, msg.ID)
+	uploadFile(bucketName, dstTmp, dstFull)
 
-	outFile := fmt.Sprintf("gs://%s/%s", bucketName, dst)
+	outFile := fmt.Sprintf("gs://%s/%s", bucketName, dstFull)
 	log.Println("out", outFile)
 
 	err = register2DB(data)
 	if err != nil {
 		log.Println(err)
+		msg.Nack()
 		return
 	}
 	log.Println("entry has been registered to DB")
