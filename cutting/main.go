@@ -16,13 +16,20 @@ import (
 )
 
 var (
-	projectID  = os.Getenv("GOOGLE_CLOUD_PROJECT")
-	subscName  = os.Getenv("SUBSCRIPTION")
-	bucketName = os.Getenv("BUCKET")
+	projectID       = os.Getenv("GOOGLE_CLOUD_PROJECT")
+	subscName       = os.Getenv("SUBSCRIPTION")
+	bucketName      = os.Getenv("BUCKET")
+	firestoreClient *firestore.Client
 )
+
+func init() {
+	ctx := context.Background()
+	firestoreClient, _ = firestore.NewClient(ctx, projectID)
+}
 
 func main() {
 	err := pullAndConvert(projectID, subscName)
+	defer firestoreClient.Close()
 	if err != nil {
 		log.Panicln(err)
 	}
@@ -122,9 +129,8 @@ func doConvert(ctx context.Context, msg *pubsub.Message) {
 func register2DB(data params) error {
 
 	ctx := context.Background()
-	client, _ := firestore.NewClient(ctx, projectID)
 	doc := data
-	client.Collection("data").Doc(data.UserID).Set(ctx, doc)
+	firestoreClient.Collection("data").Doc(data.UserID).Set(ctx, doc)
 	return nil
 }
 
