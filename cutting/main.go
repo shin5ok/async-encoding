@@ -62,11 +62,12 @@ func pullAndConvert(projectID, subscName string) error {
 }
 
 type params struct {
-	Src    string  `json:"src"`
-	Dst    string  `json:"dst"`
-	Start  float64 `json:"start"`
-	End    float64 `json:"end"`
-	UserID string  `json:"user_id"`
+	Src         string  `json:"src"`
+	Dst         string  `json:"dst"`
+	Start       float64 `json:"start"`
+	End         float64 `json:"end"`
+	UserID      string  `json:"user_id"`
+	ProcessHost string
 }
 
 func doConvert(ctx context.Context, msg *pubsub.Message) {
@@ -119,6 +120,9 @@ func doConvert(ctx context.Context, msg *pubsub.Message) {
 
 	outFile := fmt.Sprintf("gs://%s/%s", bucketName, dstFull)
 	log.Println("out", outFile)
+
+	data.ProcessHost, _ = os.Hostname()
+	data.Dst = dstFull
 
 	err = register2DB(data)
 	if err != nil {
