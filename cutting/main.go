@@ -24,12 +24,14 @@ var (
 	myIpAddr        []byte
 )
 
+const findIPUrl = `http://ifconfig.me`
+
 func init() {
 	ctx := context.Background()
 	firestoreClient, _ = firestore.NewClient(ctx, projectID)
 
 	httpClient := http.Client{Timeout: 2 * time.Second}
-	resp, err := httpClient.Get("http://ifconfig.me")
+	resp, err := httpClient.Get(findIPUrl)
 	if err != nil {
 		log.Println("cannot get to external site")
 	}
