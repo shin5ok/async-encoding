@@ -5,7 +5,11 @@ import uvicorn
 import logging
 import json
 from pydantic import BaseModel, Field, EmailStr
+from typing import List, Optional
 from fastapi.responses import RedirectResponse, Response
+from fastapi.templating import Jinja2Templates
+import jinja2
+
 from google.cloud import firestore
 
 COLLECTION = os.environ.get("COLLECTION", "data")
@@ -24,12 +28,13 @@ def get_coll():
     docs = db.collection(COLLECTION)
     return docs
 
-class Params(BaseModel):
-    src: str
+class Item(BaseModel):
     dst: str
-    start: float
-    end: float
     user_id: str
+    key: str
+
+class ItemList(BaseModel):
+    lists: None | List[Item]
 
 @app.get("/user/{user_id}")
 def _user_get(user_id: str, request: Request, user_agent = Header(default=None), host = Header(default=None), s = Depends(get_coll)):
@@ -41,6 +46,14 @@ def _user_get(user_id: str, request: Request, user_agent = Header(default=None),
     url = f"https://{BASE_HOST}/{dst}"
     return RedirectResponse(url, status_code=301)
 
+@app.get("/user")
+def _user(request: Request, user_agent = Header(default=None), host = Header(default=None), s = Depends(get_coll)):
+    r = s.limit(100)
+    lists = []
+    for x in r.stream():
+        d = x.to_dict()
+        lists.append(Item(dst=d.get('Dst'), user_id=d.get('UserID'), key=x.id))
+    return Jinja2Templates(directory="templates").TemplateResponse("item_list.html", dict(lists=lists, request=request))
 
 if __name__ == '__main__':
     port = os.environ.get("PORT", PORT)
