@@ -13,7 +13,7 @@ import jinja2
 from google.cloud import firestore
 
 COLLECTION = os.environ.get("COLLECTION", "data")
-BASE_HOST = os.environ.get("BASE_HOST", "example.com")
+BASE_HOST = os.environ.get("BASE_URL", "https://example.com")
 PORT = os.environ.get("PORT", "8080")
 
 logger = logging.getLogger(__name__)
@@ -43,7 +43,7 @@ def _user_get(user_id: str, request: Request, user_agent = Header(default=None),
     dst = doc.get().get("Dst")
     if not dst:
         return Response(status_code=404)
-    url = f"https://{BASE_HOST}/{dst}"
+    url = f"{BASE_HOST}/{dst}"
     return RedirectResponse(url, status_code=301)
 
 @app.get("/user")
