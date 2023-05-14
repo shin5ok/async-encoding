@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -87,6 +88,10 @@ func doSomething(ctx context.Context, url string) {
 		log.Println(err)
 	} else {
 		defer res.Body.Close()
+		_, err = io.ReadAll(res.Body)
+		if err != nil {
+			log.Println(err)
+		}
 	}
 
 	ctx.Done()
