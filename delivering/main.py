@@ -13,8 +13,10 @@ import jinja2
 from google.cloud import firestore
 
 COLLECTION = os.environ.get("COLLECTION", "data")
-BASE_HOST = os.environ.get("BASE_URL", "https://example.com")
+BASE_URL = os.environ.get("BASE_URL", "https://example.com")
 PORT = os.environ.get("PORT", "8080")
+
+MAX_RECORD = 10000
 
 logger = logging.getLogger(__name__)
 handler = logging.StreamHandler(sys.stdout)
@@ -34,7 +36,7 @@ class Item(BaseModel):
     key: str
 
 class ItemList(BaseModel):
-    lists: None | List[Item]
+    lists: List[Item]
 
 @app.get("/user/{user_id}")
 def _user_get(user_id: str, request: Request, user_agent = Header(default=None), host = Header(default=None), s = Depends(get_coll)):
@@ -43,16 +45,18 @@ def _user_get(user_id: str, request: Request, user_agent = Header(default=None),
     dst = doc.get().get("Dst")
     if not dst:
         return Response(status_code=404)
-    url = f"{BASE_HOST}/{dst}"
+    url = f"{BASE_URL}/{dst}"
     return RedirectResponse(url, status_code=301)
 
 @app.get("/user")
-def _user(request: Request, user_agent = Header(default=None), host = Header(default=None), s = Depends(get_coll)):
-    r = s.limit(100)
+def _user(request: Request, user_agent = Header(default=None), json: bool = False, host = Header(default=None), s = Depends(get_coll)):
+    r = s.limit(MAX_RECORD)
     lists = []
     for x in r.stream():
         d = x.to_dict()
         lists.append(Item(dst=d.get('Dst'), user_id=d.get('UserID'), key=x.id))
+    if json:
+        return ItemList(lists=lists).lists
     return Jinja2Templates(directory="templates").TemplateResponse("item_list.html", dict(lists=lists, request=request))
 
 if __name__ == '__main__':
