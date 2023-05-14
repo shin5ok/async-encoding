@@ -80,9 +80,7 @@ func doSomething(ctx context.Context, url string) {
 	fullUrl := fmt.Sprintf("%s/%s", movieUrl, url)
 
 	fmt.Println(fullUrl)
-	return
 
-	// TODO
 	res, err := http.Get(fullUrl)
 	if err != nil {
 		log.Println(err)
