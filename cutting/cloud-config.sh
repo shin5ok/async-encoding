@@ -12,7 +12,7 @@ sleep 5
 gcloud auth configure-docker --quiet
 sleep 1
 
-
+IMAGE=shin5ok/cutting:v0.1
 docker run -d \
     --log-driver=gcplogs --log-opt=gcp-project=$GOOGLE_CLOUD_PROJECT \
-    --restart always -e GOOGLE_CLOUD_PROJECT=$GOOGLE_CLOUD_PROJECT -e BUCKET=$BUCKET -e SUBSCRIPTION=$SUBSCRIPTION gcr.io/$GOOGLE_CLOUD_PROJECT/cutting:latest
+    --restart always -e GOOGLE_CLOUD_PROJECT=$GOOGLE_CLOUD_PROJECT -e BUCKET=$BUCKET -e SUBSCRIPTION=$SUBSCRIPTION ${IMAGE}

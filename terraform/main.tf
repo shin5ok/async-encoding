@@ -118,14 +118,20 @@ resource "google_compute_instance_template" "test" {
 
   network_interface {
     network = "default"
+    access_config {
+    }
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 
   metadata = {
-    foo = "bar"
-    startup-script-url = "gs://${google_storage_bucket.test.name}/cloud-shell.sh"
+    SUBSCRIPTION = google_pubsub_subscription.test.name
+    startup-script-url = "gs://${google_storage_bucket.test.name}/cloud-config.sh"
   }
 
-  metadata_startup_script = "gs://${google_storage_bucket.test.name}/cloud-shell.sh"
+  # metadata_startup_script = "gs://${google_storage_bucket.test.name}/cloud-shell.sh"
 
   service_account {
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
@@ -151,6 +157,10 @@ resource "google_compute_region_instance_group_manager" "test" {
   }
 
   target_size  = 2
+
+  lifecycle {
+    ignore_changes = [target_size]
+  }
 
   depends_on = [
     google_project_service.compute_service
@@ -237,10 +247,11 @@ resource "google_cloud_run_service" "requesting" {
 resource "google_project_iam_member" "binding_run_sa" {
   for_each = toset([
     "roles/pubsub.publisher",
-    "roles/firestore.serviceAgent",
     "roles/storage.admin",
     "roles/logging.logWriter",
-    "roles/pubsub.subscriber"
+    "roles/pubsub.subscriber",
+    "roles/datastore.user",
+    "roles/editor"
   ])
   role    = each.value
   member  = "serviceAccount:${google_service_account.run_sa.email}"
