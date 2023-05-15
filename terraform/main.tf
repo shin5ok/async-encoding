@@ -87,11 +87,19 @@ resource "google_storage_bucket" "test" {
   }
 }
 
+resource "google_storage_bucket_object" "cloud_config" {
+  name   = "cloud-config.sh"
+  source = "../cutting/cloud-config.sh"
+  bucket = google_storage_bucket.test.name
+
+  depends_on = [ 
+    google_storage_bucket.test
+  ]
+}
+
 resource "google_compute_instance_template" "test" {
   name        = "cutting"
   description = "cutting"
-
-  tags = ["foo", "bar"]
 
   labels = {
     environment = "cutting"
@@ -106,17 +114,7 @@ resource "google_compute_instance_template" "test" {
     source_image      = "debian-cloud/debian-11"
     auto_delete       = true
     boot              = true
-    // backup the disk every day
-    // resource_policies = [google_compute_resource_policy.daily_backup.id]
   }
-
-  // Use an existing disk resource
-  // disk {
-  //   // Instance Templates reference disks by name, not self link
-  //   source      = google_compute_disk.foobar.name
-  //   auto_delete = false
-  //   boot        = false
-  // }
 
   network_interface {
     network = "default"
@@ -124,13 +122,21 @@ resource "google_compute_instance_template" "test" {
 
   metadata = {
     foo = "bar"
+    startup-script-url = "gs://${google_storage_bucket.test.name}/cloud-shell.sh"
   }
+
+  metadata_startup_script = "gs://${google_storage_bucket.test.name}/cloud-shell.sh"
 
   service_account {
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
     email  = google_service_account.run_sa.email
     scopes = ["cloud-platform"]
   }
+
+  depends_on = [
+    google_project_service.compute_service,
+    google_storage_bucket_object.cloud_config
+  ]
 }
 
 resource "google_compute_region_instance_group_manager" "test" {
@@ -144,22 +150,12 @@ resource "google_compute_region_instance_group_manager" "test" {
     instance_template = google_compute_instance_template.test.self_link
   }
 
-  // all_instances_config {
-  //   metadata = {
-  //     metadata_key = "metadata_value"
-  //   }
-  //   labels = {
-  //     label_key = "label_value"
-  //   }
-  // }
-
-  //target_pools = [google_compute_target_pool.test.id]
   target_size  = 2
 
-  // auto_healing_policies {
-  //   health_check      = google_compute_health_check.autohealing.id
-  //   initial_delay_sec = 300
-  // }
+  depends_on = [
+    google_project_service.compute_service
+  ]
+
 }
 
 data "google_compute_image" "my_image" {
@@ -167,8 +163,8 @@ data "google_compute_image" "my_image" {
   project = "debian-cloud"
 }
 
-resource "google_cloud_run_service" "game_api" {
-  name     = "game-api"
+resource "google_cloud_run_service" "delivering" {
+  name     = "delivering"
   provider = google-beta
   location = var.region
 
@@ -179,7 +175,7 @@ resource "google_cloud_run_service" "game_api" {
         resources {
           limits = {
             cpu    = "1000m"
-            memory = "1028M"
+            memory = "512M"
           }
         }
       }
@@ -191,21 +187,62 @@ resource "google_cloud_run_service" "game_api" {
 }
 
 resource "google_cloud_run_service_iam_binding" "run_iam_binding" {
-  location = google_cloud_run_service.game_api.location
-  project  = google_cloud_run_service.game_api.project
-  service  = google_cloud_run_service.game_api.name
+  location = google_cloud_run_service.delivering.location
+  project  = google_cloud_run_service.delivering.project
+  service  = google_cloud_run_service.delivering.name
   role     = "roles/run.invoker"
   members = [
     "allUsers",
   ]
 }
 
+resource "google_firestore_database" "test" {
+  project                     = var.project
+  name                        = "(default)"
+  location_id                 = "nam5"
+  type                        = "FIRESTORE_NATIVE"
+  concurrency_mode            = "OPTIMISTIC"
+  app_engine_integration_mode = "DISABLED"
+
+  depends_on                 = [google_project_service.service]
+}
+
 resource "google_service_account" "run_sa" {
-  account_id = "game-api"
+  account_id = "run-sa"
+}
+
+resource "google_cloud_run_service" "requesting" {
+  name     = "requesting"
+  provider = google-beta
+  location = var.region
+
+  template {
+    spec {
+      containers {
+        image = "us-docker.pkg.dev/cloudrun/container/hello"
+        resources {
+          limits = {
+            cpu    = "1000m"
+            memory = "512M"
+          }
+        }
+      }
+      service_account_name = google_service_account.run_sa.email
+    }
+  }
+  autogenerate_revision_name = true
+  depends_on                 = [google_project_service.service]
 }
 
 resource "google_project_iam_member" "binding_run_sa" {
-  role    = "roles/spanner.databaseUser"
+  for_each = toset([
+    "roles/pubsub.publisher",
+    "roles/firestore.serviceAgent",
+    "roles/storage.admin",
+    "roles/logging.logWriter",
+    "roles/pubsub.subscriber"
+  ])
+  role    = each.value
   member  = "serviceAccount:${google_service_account.run_sa.email}"
   project = var.project
 }
@@ -215,7 +252,19 @@ resource "google_compute_region_network_endpoint_group" "run_neg" {
   network_endpoint_type = "SERVERLESS"
   region                = var.region
   cloud_run {
-    service = google_cloud_run_service.game_api.name
+    service = google_cloud_run_service.delivering.name
+  }
+  depends_on = [
+    google_project_service.compute_service
+  ]
+}
+
+resource "google_compute_region_network_endpoint_group" "run_neg_requesting" {
+  name                  = "run-neg-requesting"
+  network_endpoint_type = "SERVERLESS"
+  region                = var.region
+  cloud_run {
+    service = google_cloud_run_service.requesting.name
   }
   depends_on = [
     google_project_service.compute_service
@@ -241,8 +290,8 @@ resource "google_compute_managed_ssl_certificate" "managed_cert" {
   ]
 }
 
-resource "google_compute_backend_service" "run_backend" {
-  name = "run-backend"
+resource "google_compute_backend_service" "run_backend_delivering" {
+  name = "run-backend-delivering"
 
   protocol    = "HTTP"
   port_name   = "http"
@@ -256,10 +305,41 @@ resource "google_compute_backend_service" "run_backend" {
   ]
 }
 
+resource "google_compute_backend_service" "run_backend_requesting" {
+  name = "run-backend-requesting"
+
+  protocol    = "HTTP"
+  port_name   = "http"
+  timeout_sec = 30
+
+  backend {
+    group = google_compute_region_network_endpoint_group.run_neg_requesting.id
+  }
+  depends_on = [
+    google_project_service.compute_service
+  ]
+}
+
 resource "google_compute_url_map" "run_url_map" {
   name = "run-url-map"
 
-  default_service = google_compute_backend_service.run_backend.id
+  default_service = google_compute_backend_service.run_backend_delivering.id
+
+
+  host_rule {
+    hosts        = ["*"]
+    path_matcher = "mysite"
+  }
+
+  path_matcher {
+    name            = "mysite"
+    default_service = google_compute_backend_service.run_backend_delivering.id
+
+    path_rule {
+      paths   = ["/publish"]
+      service = google_compute_backend_service.run_backend_requesting.id
+    }
+  }
   depends_on = [
     google_project_service.compute_service
   ]
@@ -299,7 +379,7 @@ resource "google_logging_project_sink" "logging_to_bq" {
 
   destination = "bigquery.googleapis.com/projects/${var.project}/datasets/${google_bigquery_dataset.my_dataset.dataset_id}"
 
-  filter = "resource.type=\"cloud_run_revision\" AND resource.labels.configuration_name=\"game-api\" AND jsonPayload.message!=\"\""
+  filter = "resource.type=\"cloud_run_revision\" AND resource.labels.configuration_name=\"run-sa\" AND jsonPayload.message!=\"\""
 
   unique_writer_identity = true
 }
@@ -317,7 +397,10 @@ output "external_ip_attached_to_gclb" {
   value = google_compute_global_address.reserved_ip.address
 }
 
-output "cloud_run_embeded_url" {
-  value = google_cloud_run_service.game_api.status[0].url
+output "cloud_run_delivering_url" {
+  value = google_cloud_run_service.delivering.status[0].url
 }
 
+output "cloud_run_requesting_url" {
+  value = google_cloud_run_service.requesting.status[0].url
+}
