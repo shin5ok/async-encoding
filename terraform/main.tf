@@ -175,7 +175,7 @@ data "google_compute_image" "my_image" {
 
 resource "google_cloud_run_service" "delivering" {
   name     = "delivering"
-  provider = google-beta
+  provider = google
   location = var.region
 
   template {
@@ -206,6 +206,16 @@ resource "google_cloud_run_service_iam_binding" "run_iam_binding" {
   ]
 }
 
+resource "google_cloud_run_service_iam_binding" "run_iam_binding_requesting" {
+  location = google_cloud_run_service.requesting.location
+  project  = google_cloud_run_service.requesting.project
+  service  = google_cloud_run_service.requesting.name
+  role     = "roles/run.invoker"
+  members = [
+    "allUsers",
+  ]
+}
+
 resource "google_firestore_database" "test" {
   project                     = var.project
   name                        = "(default)"
@@ -223,7 +233,7 @@ resource "google_service_account" "run_sa" {
 
 resource "google_cloud_run_service" "requesting" {
   name     = "requesting"
-  provider = google-beta
+  provider = google
   location = var.region
 
   template {
