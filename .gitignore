@@ -219,4 +219,4 @@ override.tf.json
 .terraformrc
 terraform.rc
 
-movies.yaml
+movies.*
