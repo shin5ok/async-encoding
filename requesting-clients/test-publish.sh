@@ -1,5 +1,9 @@
+
 n=${1:-10}
-echo $n
+
+list=(`grep -v ^$ ../movies.txt|xargs`)
+list_count=${#list[@]}
+
 if which uuid > /dev/null;
 then
     uuid_cmd=uuid
@@ -13,8 +17,10 @@ do
     start=$((RANDOM % 50))
     end=$start+5
     uuid=`$uuid_cmd`
-    message="{\"src\":\"test-1.mp4\",\"dst\":\"\",\"user_id\":\"${uuid}\",\"start\":$((start)),\"end\":$((end))}"
+    index=$((RANDOM % ${list_count}))
+    src=${list[$((index))]}
+    message="{\"src\":\"${src}\",\"dst\":\"\",\"user_id\":\"${uuid}\",\"start\":$((start)),\"end\":$((end))}"
     echo $message
-    gcloud pubsub topics publish --message=$message test
+    # gcloud pubsub topics publish --message=$message test
     n=$((n - 1))
 done
