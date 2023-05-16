@@ -156,7 +156,7 @@ resource "google_compute_region_instance_group_manager" "test" {
     instance_template = google_compute_instance_template.test.self_link
   }
 
-  target_size  = 2
+  target_size  = 10
 
   lifecycle {
     ignore_changes = [target_size]

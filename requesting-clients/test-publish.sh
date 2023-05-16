@@ -14,13 +14,13 @@ fi
 while [ $((n)) -gt 0 ];
 do
     echo "message $n"
-    start=$((RANDOM % 50))
+    start=$((RANDOM % 20))
     end=$start+5
     uuid=`$uuid_cmd`
     index=$((RANDOM % ${list_count}))
     src=${list[$((index))]}
     message="{\"src\":\"${src}\",\"dst\":\"\",\"user_id\":\"${uuid}\",\"start\":$((start)),\"end\":$((end))}"
     echo $message
-    # gcloud pubsub topics publish --message=$message test
+    gcloud pubsub topics publish --message=$message test
     n=$((n - 1))
 done
