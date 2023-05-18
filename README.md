@@ -81,7 +81,7 @@ foobar.mp4
 cd requesting-clients/
 bash ./test-publish.sh 10000
 ```
-This is an example to send 10000 messages as encoding request contains random source image ans cutting time range.
+This is an example to send 10000 messages as request contains source image ans cutting time range randomly.
 
 
 - See Cloud Logging, that will show how processing runs.  
