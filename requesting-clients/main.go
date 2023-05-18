@@ -70,11 +70,11 @@ func genParams() map[string]any {
 	dst := ""
 	id, _ := uuid.NewRandom()
 	params := map[string]any{
-		"src":   src,
-		"dst":   dst,
-		"start": start,
-		"end":   end,
-		"id":    id.String(),
+		"src":     src,
+		"dst":     dst,
+		"start":   start,
+		"end":     end,
+		"user_id": id.String(),
 	}
 	return params
 }
