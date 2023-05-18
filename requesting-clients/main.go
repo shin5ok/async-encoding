@@ -27,7 +27,7 @@ var (
 	isDebug    = os.Getenv("DEBUG")
 )
 
-func debugPrint(message string) {
+func debugPrint(message any) {
 	if isDebug != "" {
 		log.Println(message)
 	}
@@ -87,7 +87,7 @@ func main() {
 	for i := 0; i < requestNum; i++ {
 		sem.Acquire(ctx, 1)
 		params := genParams()
-		fmt.Println(params)
+		debugPrint(params)
 		e.Go(func() error {
 			doSomething(ctx, postUrl, params)
 			sem.Release(1)
@@ -118,7 +118,7 @@ func doSomething(ctx context.Context, url string, data map[string]any) {
 			log.Println(err)
 		}
 		_ = dataBody
-		// fmt.Println(string(dataBody))
+		// debugPrint(string(dataBody))
 	}
 
 	ctx.Done()
