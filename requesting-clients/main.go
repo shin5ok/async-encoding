@@ -14,6 +14,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/google/uuid"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/sync/semaphore"
 )
@@ -67,11 +68,13 @@ func genParams() map[string]any {
 	index := rand.Intn(len(list))
 	src := list[index]
 	dst := ""
+	id, _ := uuid.NewRandom()
 	params := map[string]any{
 		"src":   src,
 		"dst":   dst,
 		"start": start,
 		"end":   end,
+		"id":    id.String(),
 	}
 	return params
 }
@@ -104,9 +107,10 @@ func doSomething(ctx context.Context, url string, data map[string]any) {
 
 	time.Sleep(time.Second * 1)
 
-	params := map[string]any{}
+	params := data
 	dataJson, _ := json.Marshal(params)
 
+	debugPrint(string(dataJson))
 	res, err := http.Post(url, "application/json", bytes.NewReader(dataJson))
 
 	if err != nil {
@@ -118,7 +122,7 @@ func doSomething(ctx context.Context, url string, data map[string]any) {
 			log.Println(err)
 		}
 		_ = dataBody
-		// debugPrint(string(dataBody))
+		debugPrint(string(dataBody))
 	}
 
 	ctx.Done()
