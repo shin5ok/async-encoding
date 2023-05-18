@@ -41,7 +41,7 @@ func init() {
 	flag.IntVar(&requestNum, "requestnum", 100, "")
 
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "ex: go run . -posturl=$POST_URL -procnum 100 -requestnum 1000\n")
+		fmt.Fprintf(os.Stderr, "ex: go run . -posturl=https://example.com -procnum 100 -requestnum 1000\n")
 	}
 
 	flag.Parse()
