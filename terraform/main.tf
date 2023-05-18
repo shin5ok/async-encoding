@@ -357,7 +357,7 @@ resource "google_compute_url_map" "run_url_map" {
     default_service = google_compute_backend_service.run_backend_delivering.id
 
     path_rule {
-      paths   = ["/publish"]
+      paths   = ["/request"]
       service = google_compute_backend_service.run_backend_requesting.id
     }
   }
