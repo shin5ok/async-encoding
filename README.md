@@ -71,12 +71,14 @@ movie-1.mp4
 foobar.mp4
 ```
 
-###  6. Test
+###  6. Test it
 - Make a lot of requests.
 ```
 cd requesting-clients/
-bash ./test-publish.sh
+bash ./test-publish.sh 10000
 ```
+This is an example to send 10000 messages as encoding request contains random source image ans cutting time range.
+
 
 - See Cloud Logging, that will show how processing runs.  
 And then, you see the progress in Firestore and GCS.
