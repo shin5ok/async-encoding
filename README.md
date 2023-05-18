@@ -41,6 +41,7 @@ Deploy it.
 ```
 git clone https://github.com/shin5ok/gcs-proxy.git
 cd gcs-proxy/
+export REGION=$TF_VAR_region
 bash deploy.sh
 ```
 
@@ -76,7 +77,7 @@ Over 1 mins movie would be nice.
 - Transfer them to GCS bucket you prepared in advance.   
 If you use gcloud cli,
 ```
-gcloud storage cp *.mp4 gs://<your bucketname>/
+gcloud storage cp *.mp4 gs://$TF_VAR_gcs/
 ```
 
 - List your transfered movies's name into config named movies.yaml  
@@ -100,7 +101,9 @@ make test-client
 ```
 Do test.
 ```
-./test-client -posturl=https://api.uname.link/dump -procnum 10 -requestnum 10000
+cd request-clients/
+POST_URL=<your Cloud Run 'requesting' URL>
+./test-client -posturl=$POST_URL -procnum 10 -requestnum 10000
 ```
 This is an example to send 10000 messages as request contains source image and cutting time range randomly, from 10 virtual clients parallelly.
 
