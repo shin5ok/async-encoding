@@ -13,6 +13,7 @@ export TF_VAR_domain=<your domain name>
 export TF_VAR_region=us-central1
 export TF_VAR_zone=us-central1-a
 export TF_VAR_gcs=<your bucket name>
+export GOOGLE_CLOUD_PROJECT=<your project id>
 ```
 Note: Domain name must be one you manage.  
 If you don't have it, You can get your favorite one at *Cloud Domains*.
@@ -31,10 +32,9 @@ terraform apply
 
 ### 3. (*Temporary*) Prepare GCS Proxy
 Prepare gcs-proxy to deliver objects that be protected in GCS to external user securely.  
-Find your GCS bucket name that will store your movie in advance.  
-eg: shingo-bucket-movie-xxxxx
+Set environment variables of your bucket name from terraform's one.
 ```
-export GCS_BUCKET=<your bucketname>
+export GCS_BUCKET=$TF_VAR_gcs
 ```
 
 Deploy it.
@@ -51,6 +51,11 @@ export BASE_URL=https://xxxxxxxxxxxx.run.app
 
 ### 4. Build applications and deploy them to Cloud Run.  
 Before doing here, make sure if you have Docker environment on your PC, Or you need to prepare it.
+
+- Prepare your registory for containers, you need to do it just only once.
+```
+make repo
+```
 
 - **requesting application** that is to accept request from each user.
 ```
