@@ -88,8 +88,12 @@ ls *.mp4 > ../movies.txt
 
 ###  6. Test it
 - Make a lot of requests.
+Build a command to test.
 ```
-cd requesting-clients/
+make test-client
+```
+Do test.
+```
 ./test-client -posturl=https://api.uname.link/dump -procnum 10 -requestnum 10000
 ```
 This is an example to send 10000 messages as request contains source image and cutting time range randomly, from 10 virtual clients parallelly.
