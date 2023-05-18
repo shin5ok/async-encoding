@@ -83,12 +83,13 @@ foobar.mp4
 ```
 You will make it simply by hit command in the right directory,
 ```
-ls *.mp4 > ../movies.txt
+ls *.mp4 > YOUR_DIRECTORY/movies.txt
 ```
 
 ###  6. Test it
 - Make a lot of requests.
-Build a command to test.
+Build a command to test.  
+If you don't have 'go' command, install the latest one according to [here](https://go.dev/doc/install).
 ```
 make test-client
 ```
@@ -100,7 +101,7 @@ This is an example to send 10000 messages as request contains source image and c
 
 
 - See Cloud Logging, that will show how processing runs.  
-And then, you see the progress in Firestore and GCS.
+And then, you also see the progress in Firestore and GCS.
 
 - Open the site url that was assigned to **delivering** Cloud Run.
 
