@@ -79,9 +79,9 @@ foobar.mp4
 - Make a lot of requests.
 ```
 cd requesting-clients/
-bash ./test-publish.sh 10000
+./test-client -posturl=https://api.uname.link/dump -procnum 10 -requestnum 10000
 ```
-This is an example to send 10000 messages as request contains source image ans cutting time range randomly.
+This is an example to send 10000 messages as request contains source image ans cutting time range randomly, from 10 clients parallelly.
 
 
 - See Cloud Logging, that will show how processing runs.  
