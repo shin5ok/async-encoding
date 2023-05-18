@@ -20,12 +20,13 @@ import (
 )
 
 var (
-	postUrl    string
-	procNum    int64
-	requestNum int
-	list       []string
-	listFile   = "../movies.txt"
-	isDebug    = os.Getenv("DEBUG")
+	postUrl         string
+	procNum         int64
+	requestNum      int
+	list            []string
+	defaultListFile = "../movies.txt"
+	isDebug         = os.Getenv("DEBUG")
+	listFile        string
 )
 
 func debugPrint(message any) {
@@ -37,11 +38,12 @@ func debugPrint(message any) {
 func init() {
 
 	flag.StringVar(&postUrl, "posturl", "", "")
+	flag.StringVar(&listFile, "listfile", defaultListFile, "")
 	flag.Int64Var(&procNum, "procnum", 10, "")
 	flag.IntVar(&requestNum, "requestnum", 100, "")
 
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "ex: go run . -posturl=https://example.com -procnum 100 -requestnum 1000\n")
+		fmt.Fprintf(os.Stderr, "ex: go run . -posturl=https://example.com -listfile ./movies.txt -procnum 100 -requestnum 1000\n")
 	}
 
 	flag.Parse()
