@@ -17,7 +17,7 @@ logger.addHandler(handler)
 logger.setLevel(logging.DEBUG)
 
 PORT = os.environ.get("PORT", "8080")
-PROJECT_ID = os.environ.get("GOOGLE_CLOUD_PROJECT")
+PROJECT_ID = os.environ.get("PROJECT_ID")
 TOPIC = os.environ.get("TOPIC")
 
 class ProcessRequest(BaseModel):
