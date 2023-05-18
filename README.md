@@ -29,17 +29,7 @@ Just type it to build the whole infrastructure.
 terraform apply
 ```
 
-### 3. Build applications and deploy them to Cloud Run.  
-- **requesting application** that is to accept request from each user.
-```
-make requesting
-```
-- **delivering application** that is to deliver movie to each appropriate user.
-```
-make delivering
-```
-
-### 4. (*Temporary*) Prepare GCS Proxy
+### 3. (*Temporary*) Prepare GCS Proxy
 Prepare gcs-proxy to deliver objects that be protected in GCS to external user securely.  
 Find your GCS bucket name that will store your movie in advance.  
 eg: shingo-bucket-movie-xxxxx
@@ -52,6 +42,23 @@ Deploy it.
 git clone https://github.com/shin5ok/gcs-proxy.git
 cd gcs-proxy/
 bash deploy.sh
+```
+
+Set environment variables of url the Cloud Run published for after procedure.
+```
+export BASE_URL=https://xxxxxxxxxxxx.run.app
+```
+
+### 4. Build applications and deploy them to Cloud Run.  
+Before doing here, make sure if you have Docker environment on your PC, Or you need to prepare it.
+
+- **requesting application** that is to accept request from each user.
+```
+make requesting
+```
+- **delivering application** that is to deliver movie to each appropriate user.
+```
+make delivering
 ```
 
 ### 5. Prepare to test to work
@@ -74,6 +81,10 @@ movie-1.mp4
 20320301.mp4
 foobar.mp4
 ```
+You will make it simply by hit command in the right directory,
+```
+ls *.mp4 > ../movies.txt
+```
 
 ###  6. Test it
 - Make a lot of requests.
@@ -81,7 +92,7 @@ foobar.mp4
 cd requesting-clients/
 ./test-client -posturl=https://api.uname.link/dump -procnum 10 -requestnum 10000
 ```
-This is an example to send 10000 messages as request contains source image ans cutting time range randomly, from 10 clients parallelly.
+This is an example to send 10000 messages as request contains source image and cutting time range randomly, from 10 virtual clients parallelly.
 
 
 - See Cloud Logging, that will show how processing runs.  
