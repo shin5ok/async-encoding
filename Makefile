@@ -17,7 +17,7 @@ repo:
 requesting:
 	docker build -t $(BASE_REPO)/requesting -f ./requesting/Dockerfile ./requesting
 	docker push $(BASE_REPO)/requesting
-	gcloud run deploy requesting --region=$(REGION) --set-env-vars=TOPIC=$(TOPIC) --image=$(BASE_REPO)/requesting --allow-unauthenticated
+	gcloud run deploy requesting --region=$(REGION) --set-env-vars=TOPIC=$(TOPIC),PROJECT_ID=$(GOOGLE_CLOUD_PROJECT) --image=$(BASE_REPO)/requesting --allow-unauthenticated
 
 .PHONY: delivering
 delivering:
