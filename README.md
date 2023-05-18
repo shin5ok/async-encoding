@@ -18,10 +18,14 @@ Note: Domain name must be one you manage.
 If you don't have it, You can get your favorite one at *Cloud Domains*.
 
 ### 2. Build infrastructure
+Preparation and confimation to run totally.
 ```
 cd terraform/
 rm *tfstate*
 terraform plan
+```
+Just type it to build the whole infrastructure.
+```
 terraform apply
 ```
 
