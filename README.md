@@ -51,7 +51,7 @@ bash deploy.sh
 
 Set environment variables of url the Cloud Run published for after procedure.
 ```
-export BASE_URL=https://xxxxxxxxxxxx.run.app
+export BASE_URL=$(gcloud run services describe gcs-proxy --region=$REGION --format=json | jq .status.url -r)
 ```
 
 ### 4. Build applications and deploy them to Cloud Run.  
@@ -84,7 +84,7 @@ If you use gcloud cli,
 gcloud storage cp *.mp4 gs://$TF_VAR_gcs/
 ```
 
-- List your transfered movies's name into config named movies.yaml  
+- List your transfered movies's name into config named movies.txt
 Like this,
 ```
 movie-1.mp4
@@ -106,8 +106,8 @@ make test-client
 Do test.
 ```
 cd clients/request-clients/
-POST_URL=<your Cloud Run 'requesting' URL>
-./test-client -posturl=$POST_URL -procnum 10 -requestnum 10000
+POST_URL="$(gcloud run services describe requesting --region=$REGION --format=json | jq .status.url -r)/request"
+./test-client -posturl=$POST_URL -listfile ../../movies.txt -procnum 10 -requestnum 10000
 ```
 This is an example to send 10000 messages as request contains source image and cutting time range randomly, from 10 virtual clients parallelly.
 
@@ -120,8 +120,8 @@ And then, you also see the progress in Firestore and GCS.
 - Download stored movies parallelly
 ```
 cd clients/deliver-requests/
-LIST_URL=<your Cloud Run 'delivering' URL>
-MOVIE_URL=<your Cloud Run as 'gcs-proxy' URL>
+MOVIE_URL=$BASE_URL
+LIST_URL="$(gcloud run services describe delivering --region=$REGION --format=json | jq .status.url -r)/user"
 go run . -listurl=$LIST_URL -movieurl=$MOVIE_URL -procnum 10
 ```
 
