@@ -21,7 +21,7 @@ PROJECT_ID = os.environ.get("PROJECT_ID")
 TOPIC = os.environ.get("TOPIC")
 
 class ProcessRequest(BaseModel):
-    id: str
+    user_id: str
     src: str
     start: int
     end: int
