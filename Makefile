@@ -27,5 +27,5 @@ delivering:
 
 .PHONY: test-client
 test-client:
-	( cd requesting-clients && \
+	( cd clients/requesting-clients && \
 		go build -o test-client . )
