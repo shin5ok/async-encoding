@@ -1,17 +1,21 @@
 # Processing each movie asynchronously according to client requests and distribute it
 
+## Prerequiste
+- Google Cloud Account enabled Google Cloud billing
+- Google Cloud Project
+
 ## Procedure to setup the whole system
-### 0. Prepare Google Cloud Project and environment variables
+### 1. Prepare Google Cloud Project and environment variables
 Sign in to your project,
 ```
 gcloud auth login --update-adc
 gcloud config set project <your project id>
 ```
-And then,
+And then, set some environment variables to be used in the following step.
 ```
 export TF_VAR_domain=<your domain name>
-export TF_VAR_region=us-central1
-export TF_VAR_zone=us-central1-a
+export TF_VAR_region=<GCP region ex: us-central1>
+export TF_VAR_zone=<GCP region ex:us-central1-a>
 export TF_VAR_gcs=<your bucket name>
 export GOOGLE_CLOUD_PROJECT=<your project id>
 ```
@@ -113,3 +117,5 @@ And then, you also see the progress in Firestore and GCS.
 
 - Open the site url that was assigned to **delivering** Cloud Run with your browser.
 
+## 7. Cleanup
+See [here](https://cloud.google.com/resource-manager/docs/creating-managing-projects?shutting_down_projects&hl=ja#shutting_down_projects).
