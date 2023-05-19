@@ -105,7 +105,7 @@ make test-client
 ```
 Do test.
 ```
-cd request-clients/
+cd clients/request-clients/
 POST_URL=<your Cloud Run 'requesting' URL>
 ./test-client -posturl=$POST_URL -procnum 10 -requestnum 10000
 ```
@@ -116,6 +116,14 @@ This is an example to send 10000 messages as request contains source image and c
 And then, you also see the progress in Firestore and GCS.
 
 - Open the site url that was assigned to **delivering** Cloud Run with your browser.
+
+- Download stored movies parallelly
+```
+cd clients/deliver-requests/
+LIST_URL=<your Cloud Run 'delivering' URL>
+MOVIE_URL=<your Cloud Run as 'gcs-proxy' URL>
+go run . -listurl=$LIST_URL -movieurl=$MOVIE_URL -procnum 10
+```
 
 ## 7. Cleanup
 See [here](https://cloud.google.com/resource-manager/docs/creating-managing-projects?shutting_down_projects&hl=ja#shutting_down_projects).
