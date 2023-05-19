@@ -1,4 +1,4 @@
-# Cut each movie asynchronously according to requests and distribute it
+# Processing each movie asynchronously according to client requests and distribute it
 
 ## Procedure to setup the whole system
 ### 0. Prepare Google Cloud Project and environment variables
