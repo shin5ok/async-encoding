@@ -17,17 +17,17 @@ import (
 
 var (
 	listUrl, movieUrl string
-	num               int64
+	procnum           int64
 )
 
 func init() {
 
 	flag.StringVar(&listUrl, "listurl", "", "")
 	flag.StringVar(&movieUrl, "movieurl", "", "")
-	flag.Int64Var(&num, "num", 2, "")
+	flag.Int64Var(&procnum, "procnum", 2, "")
 
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "ex: go run . -listurl=$LIST_URL -movieurl=https://example.com -num 10\n")
+		fmt.Fprintf(os.Stderr, "ex: go run . -listurl=$LIST_URL -movieurl=https://example.com -procnum 10\n")
 		flag.PrintDefaults()
 	}
 
@@ -57,7 +57,7 @@ func main() {
 
 	list := getUrlList()
 
-	sem := semaphore.NewWeighted(num)
+	sem := semaphore.NewWeighted(procnum)
 
 	for _, l := range list {
 		url := l["dst"]
