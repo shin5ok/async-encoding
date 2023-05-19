@@ -222,4 +222,4 @@ terraform.rc
 movies.*
 
 
-*/test-client
+clients/request-clients/test-client
