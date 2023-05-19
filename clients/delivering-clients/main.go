@@ -27,7 +27,7 @@ func init() {
 	flag.Int64Var(&num, "num", 2, "")
 
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, `ex: go run . -listurl=$LIST_URL -movieurl=https://example.com -num 10`)
+		fmt.Fprintf(os.Stderr, "ex: go run . -listurl=$LIST_URL -movieurl=https://example.com -num 10\n")
 		flag.PrintDefaults()
 	}
 
