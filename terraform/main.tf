@@ -22,7 +22,8 @@ locals {
     "run.googleapis.com",
     "pubsub.googleapis.com",
     "firestore.googleapis.com",
-    "storage.googleapis.com"
+    "storage.googleapis.com",
+    "artifactregistry.googleapis.com",
   ])
 }
 
