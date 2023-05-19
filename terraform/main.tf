@@ -41,6 +41,7 @@ resource "google_project_service" "service" {
   depends_on = [
     google_project_service.compute_service
   ]
+  disable_dependent_services = true
 }
 
 resource "google_pubsub_topic" "test" {
@@ -50,7 +51,7 @@ resource "google_pubsub_topic" "test" {
     foo = "test"
   }
 
-  message_retention_duration = "86600s"
+  message_retention_duration = "2678400s"
 }
 
 resource "google_pubsub_subscription" "test" {
@@ -61,8 +62,8 @@ resource "google_pubsub_subscription" "test" {
     foo = "test"
   }
 
-  # 20 minutes
-  message_retention_duration = "1200s"
+  # 7 days
+  message_retention_duration = "604800s"
   retain_acked_messages      = true
 
   retry_policy {
@@ -141,7 +142,8 @@ resource "google_compute_instance_template" "test" {
 
   depends_on = [
     google_project_service.compute_service,
-    google_storage_bucket_object.cloud_config
+    google_storage_bucket_object.cloud_config,
+    google_firestore_database.test,
   ]
 }
 
@@ -156,14 +158,17 @@ resource "google_compute_region_instance_group_manager" "test" {
     instance_template = google_compute_instance_template.test.self_link
   }
 
-  target_size  = 10
+  target_size  = 2
 
   lifecycle {
     ignore_changes = [target_size]
   }
 
   depends_on = [
-    google_project_service.compute_service
+    google_project_service.compute_service,
+    google_firestore_database.test,
+    google_cloud_run_service.requesting,
+    google_cloud_run_service.delivering,
   ]
 
 }
