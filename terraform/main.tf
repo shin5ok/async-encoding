@@ -327,9 +327,23 @@ resource "google_compute_backend_service" "run_backend_delivering" {
   backend {
     group = google_compute_region_network_endpoint_group.run_neg.id
   }
+
+  health_checks = [google_compute_https_health_check.test.id]
+
   depends_on = [
     google_project_service.compute_service
   ]
+}
+
+resource "google_compute_https_health_check" "test" {
+  name               = "health-check"
+
+  request_path       = "/test"
+  check_interval_sec = 3
+  timeout_sec        = 2
+
+  port = 443
+
 }
 
 resource "google_compute_backend_service" "run_backend_requesting" {
@@ -338,6 +352,8 @@ resource "google_compute_backend_service" "run_backend_requesting" {
   protocol    = "HTTP"
   port_name   = "http"
   timeout_sec = 30
+
+  health_checks = [google_compute_https_health_check.test.id]
 
   backend {
     group = google_compute_region_network_endpoint_group.run_neg_requesting.id
@@ -364,6 +380,11 @@ resource "google_compute_url_map" "run_url_map" {
 
     path_rule {
       paths   = ["/request"]
+      service = google_compute_backend_service.run_backend_requesting.id
+    }
+
+    path_rule {
+      paths   = ["/user", "/user/*"]
       service = google_compute_backend_service.run_backend_requesting.id
     }
   }
