@@ -34,7 +34,7 @@ Just type it to build the whole infrastructure.
 terraform apply
 ```
 
-### 3. (*Temporary*) Prepare GCS Proxy
+<!--### 3. (*Temporary*) Prepare GCS Proxy
 Prepare gcs-proxy to deliver objects that be protected in GCS to external user securely.  
 Set environment variables of your bucket name from terraform's one.
 ```
@@ -53,8 +53,9 @@ Set environment variables of url the Cloud Run published for after procedure.
 ```
 export BASE_URL=$(gcloud run services describe gcs-proxy --region=$REGION --format=json | jq .status.url -r)
 ```
+-->
 
-### 4. Build applications and deploy them to Cloud Run.  
+### 3. Build applications and deploy them to Cloud Run.  
 Before doing here, make sure if you have Docker environment on your PC, Or you need to prepare it.
 
 - Prepare your registory for containers, you need to do it just only once.
@@ -68,10 +69,11 @@ make requesting
 ```
 - **delivering application** that is to deliver movie to each appropriate user.
 ```
+export BASE_URL="https://${TF_VAR_domain}"
 make delivering
 ```
 
-### 5. Prepare to test to work
+### 4. Prepare to test to work
 - Prepare some test movies as MPEG4 format.  
 Over 1 mins movie would be nice.  
 
@@ -96,7 +98,7 @@ You will make it simply by hit command in the right directory,
 ls *.mp4 > YOUR_DIRECTORY/movies.txt
 ```
 
-###  6. Test it
+###  5. Test it
 - Make a lot of requests.
 Build a command to test.  
 If you don't have 'go' command, install the latest one according to [here](https://go.dev/doc/install).
@@ -125,5 +127,5 @@ LIST_URL="$(gcloud run services describe delivering --region=$REGION --format=js
 go run . -listurl=$LIST_URL -movieurl=$MOVIE_URL -procnum 10
 ```
 
-## 7. Cleanup
+## 6. Cleanup
 See [here](https://cloud.google.com/resource-manager/docs/creating-managing-projects?shutting_down_projects&hl=ja#shutting_down_projects).
