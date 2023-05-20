@@ -34,6 +34,16 @@ Just type it to build the whole infrastructure.
 terraform apply
 ```
 
+You need to configure DNS A record to assign IP address to your domain.  
+There are different ways.  
+**After doing that, enabling managed certs may be taking over 10 miniutes.**
+
+Here's the command to confirm if the enablement has been completed.
+```
+gcloud compute ssl-certificates list
+```
+
+
 <!--### 3. (*Temporary*) Prepare GCS Proxy
 Prepare gcs-proxy to deliver objects that be protected in GCS to external user securely.  
 Set environment variables of your bucket name from terraform's one.
@@ -102,14 +112,11 @@ ls *.mp4 > YOUR_DIRECTORY/movies.txt
 - Make a lot of requests.
 Build a command to test.  
 If you don't have 'go' command, install the latest one according to [here](https://go.dev/doc/install).
-```
-make test-client
-```
 Do test.
 ```
 cd clients/request-clients/
 POST_URL="$(gcloud run services describe requesting --region=$REGION --format=json | jq .status.url -r)/request"
-./test-client -posturl=$POST_URL -listfile ../../movies.txt -procnum 10 -requestnum 10000
+go run . -posturl=$POST_URL -listfile ../../movies.txt -procnum 10 -requestnum 10000
 ```
 This is an example to send 10000 messages as request contains source image and cutting time range randomly, from 10 virtual clients parallelly.
 
