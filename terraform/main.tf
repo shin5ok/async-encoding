@@ -418,39 +418,22 @@ resource "google_compute_global_forwarding_rule" "run_lb" {
   ]
 }
 
-# resource "google_bigquery_dataset" "my_dataset" {
-#   dataset_id                  = "my_dataset"
-#   friendly_name               = "my_dataset"
-#   location                    = "US"
+# output "cloud_run_delivering_url" {
+#   value = google_cloud_run_service.delivering.status[0].url
 # }
 # 
-# resource "google_logging_project_sink" "logging_to_bq" {
-#   name = "logging-to-bq"
-# 
-#   destination = "bigquery.googleapis.com/projects/${var.project}/datasets/${google_bigquery_dataset.my_dataset.dataset_id}"
-# 
-#   filter = "resource.type=\"cloud_run_revision\" AND resource.labels.configuration_name=\"run-sa\" AND jsonPayload.message!=\"\""
-# 
-#   unique_writer_identity = true
+# output "cloud_run_requesting_url" {
+#   value = google_cloud_run_service.requesting.status[0].url
 # }
-# 
-# resource "google_project_iam_binding" "log_writer" {
-#   project = var.project
-#   role    = "roles/bigquery.dataEditor"
-# 
-#   members = [
-#     google_logging_project_sink.logging_to_bq.writer_identity,
-#   ]
-# }
+
+output "requesting_url" {
+  value = "https://${var.domain}/request"
+}
+
+output "delivering_url" {
+  value = "https://${var.domain}/user"
+}
 
 output "external_ip_attached_to_gclb" {
   value = google_compute_global_address.reserved_ip.address
-}
-
-output "cloud_run_delivering_url" {
-  value = google_cloud_run_service.delivering.status[0].url
-}
-
-output "cloud_run_requesting_url" {
-  value = google_cloud_run_service.requesting.status[0].url
 }
