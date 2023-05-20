@@ -104,6 +104,7 @@ resource "google_compute_backend_bucket" "test" {
   bucket_name = google_storage_bucket.test.name
   enable_cdn  = false
   depends_on = [
+    google_project_service.compute_service,
     google_storage_bucket.test
   ]
 }
@@ -375,7 +376,8 @@ resource "google_compute_url_map" "run_url_map" {
 
   path_matcher {
     name            = "mysite"
-    default_service = google_compute_backend_service.run_backend_delivering.id
+
+    default_service = google_compute_backend_bucket.test.id
 
     path_rule {
       paths   = ["/request"]
@@ -383,10 +385,11 @@ resource "google_compute_url_map" "run_url_map" {
     }
 
     path_rule {
-      paths   = ["/user", "/user/*"]
+      paths   = ["/user"]
       service = google_compute_backend_service.run_backend_delivering.id
     }
   }
+
   depends_on = [
     google_project_service.compute_service
   ]
@@ -415,30 +418,30 @@ resource "google_compute_global_forwarding_rule" "run_lb" {
   ]
 }
 
-resource "google_bigquery_dataset" "my_dataset" {
-  dataset_id                  = "my_dataset"
-  friendly_name               = "my_dataset"
-  location                    = "US"
-}
-
-resource "google_logging_project_sink" "logging_to_bq" {
-  name = "logging-to-bq"
-
-  destination = "bigquery.googleapis.com/projects/${var.project}/datasets/${google_bigquery_dataset.my_dataset.dataset_id}"
-
-  filter = "resource.type=\"cloud_run_revision\" AND resource.labels.configuration_name=\"run-sa\" AND jsonPayload.message!=\"\""
-
-  unique_writer_identity = true
-}
-
-resource "google_project_iam_binding" "log_writer" {
-  project = var.project
-  role    = "roles/bigquery.dataEditor"
-
-  members = [
-    google_logging_project_sink.logging_to_bq.writer_identity,
-  ]
-}
+# resource "google_bigquery_dataset" "my_dataset" {
+#   dataset_id                  = "my_dataset"
+#   friendly_name               = "my_dataset"
+#   location                    = "US"
+# }
+# 
+# resource "google_logging_project_sink" "logging_to_bq" {
+#   name = "logging-to-bq"
+# 
+#   destination = "bigquery.googleapis.com/projects/${var.project}/datasets/${google_bigquery_dataset.my_dataset.dataset_id}"
+# 
+#   filter = "resource.type=\"cloud_run_revision\" AND resource.labels.configuration_name=\"run-sa\" AND jsonPayload.message!=\"\""
+# 
+#   unique_writer_identity = true
+# }
+# 
+# resource "google_project_iam_binding" "log_writer" {
+#   project = var.project
+#   role    = "roles/bigquery.dataEditor"
+# 
+#   members = [
+#     google_logging_project_sink.logging_to_bq.writer_identity,
+#   ]
+# }
 
 output "external_ip_attached_to_gclb" {
   value = google_compute_global_address.reserved_ip.address
