@@ -426,11 +426,11 @@ resource "google_compute_global_forwarding_rule" "run_lb" {
 #   value = google_cloud_run_service.requesting.status[0].url
 # }
 
-output "requesting_url" {
+output "url_of_requesting" {
   value = "https://${var.domain}/request"
 }
 
-output "delivering_url" {
+output "url_of_delivering" {
   value = "https://${var.domain}/user"
 }
 
