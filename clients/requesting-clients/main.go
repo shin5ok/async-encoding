@@ -17,6 +17,8 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/sync/semaphore"
+
+	"github.com/briandowns/spinner"
 )
 
 var (
@@ -89,6 +91,9 @@ func main() {
 
 	sem := semaphore.NewWeighted(procNum)
 
+	s := spinner.New(spinner.CharSets[9], 100*time.Millisecond)
+	s.Start()
+
 	for i := 0; i < requestNum; i++ {
 		sem.Acquire(ctx, 1)
 		params := genParams()
@@ -103,6 +108,8 @@ func main() {
 	if err := e.Wait(); err != nil {
 		log.Println(err)
 	}
+
+	s.Stop()
 }
 
 func doSomething(ctx context.Context, url string, data map[string]any) {
