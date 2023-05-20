@@ -38,6 +38,10 @@ class Item(BaseModel):
 class ItemList(BaseModel):
     lists: List[Item]
 
+@app.get("/test")
+def _check():
+    return {}
+
 @app.get("/user/{user_id}")
 def _user_get(user_id: str, request: Request, user_agent = Header(default=None), host = Header(default=None), s = Depends(get_coll)):
     doc = s.document(user_id)
@@ -58,6 +62,7 @@ def _user(request: Request, user_agent = Header(default=None), json: bool = Fals
     if json:
         return ItemList(lists=lists).lists
     return Jinja2Templates(directory="templates").TemplateResponse("item_list.html", dict(lists=lists, request=request))
+
 
 if __name__ == '__main__':
     port = os.environ.get("PORT", PORT)
