@@ -3,6 +3,10 @@ GOOGLE_CLOUD_PROJECT=$(curl http://metadata.google.internal/computeMetadata/v1/p
 BUCKET=$GOOGLE_CLOUD_PROJECT
 SUBSCRIPTION=$(curl http://metadata.google.internal/computeMetadata/v1/instance/attributes/SUBSCRIPTION -H "Metadata-Flavor: Google")
 
+echo GOOGLE_CLOUD_PROJECT=$GOOGLE_CLOUD_PROJECT
+echo BUCKET=$BUCKET
+echo SUBSCRIPTION=$SUBSCRIPTION
+
 curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh
 bash add-google-cloud-ops-agent-repo.sh --also-install
 
