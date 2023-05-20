@@ -385,7 +385,7 @@ resource "google_compute_url_map" "run_url_map" {
     }
 
     path_rule {
-      paths   = ["/user"]
+      paths   = ["/user", "/user/*"]
       service = google_compute_backend_service.run_backend_delivering.id
     }
   }
