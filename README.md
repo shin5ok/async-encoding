@@ -115,7 +115,7 @@ If you don't have 'go' command, install the latest one according to [here](https
 Do test.
 ```
 cd clients/request-clients/
-POST_URL="$(gcloud run services describe requesting --region=$REGION --format=json | jq .status.url -r)/request"
+POST_URL="${BASE_URL}/request"
 go run . -posturl=$POST_URL -listfile ../../movies.txt -procnum 10 -requestnum 10000
 ```
 This is an example to send 10000 messages as request contains source image and cutting time range randomly, from 10 virtual clients parallelly.

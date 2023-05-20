@@ -67,7 +67,7 @@ func init() {
 }
 
 func genParams() map[string]any {
-	start := rand.Intn(50)
+	start := rand.Intn(30)
 	end := start + 5
 	index := rand.Intn(len(list))
 	src := list[index]
