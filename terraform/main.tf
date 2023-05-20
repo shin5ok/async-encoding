@@ -99,6 +99,15 @@ resource "google_storage_bucket_object" "cloud_config" {
   ]
 }
 
+resource "google_compute_backend_bucket" "test" {
+  name        = "test-storage"
+  bucket_name = google_storage_bucket.test.name
+  enable_cdn  = false
+  depends_on = [
+    google_storage_bucket.test
+  ]
+}
+
 resource "google_compute_instance_template" "test" {
   name        = "cutting"
   description = "cutting"
@@ -222,6 +231,12 @@ resource "google_cloud_run_service_iam_binding" "run_iam_binding_requesting" {
   ]
 }
 
+resource "google_storage_bucket_iam_member" "test" {
+  bucket = google_storage_bucket.test.name
+  role = "roles/storage.objectViewer"
+  member = "allUsers"
+}
+
 resource "google_firestore_database" "test" {
   project                     = var.project
   name                        = "(default)"
@@ -328,22 +343,9 @@ resource "google_compute_backend_service" "run_backend_delivering" {
     group = google_compute_region_network_endpoint_group.run_neg.id
   }
 
-  health_checks = [google_compute_https_health_check.test.id]
-
   depends_on = [
     google_project_service.compute_service
   ]
-}
-
-resource "google_compute_https_health_check" "test" {
-  name               = "health-check"
-
-  request_path       = "/test"
-  check_interval_sec = 3
-  timeout_sec        = 2
-
-  port = 443
-
 }
 
 resource "google_compute_backend_service" "run_backend_requesting" {
@@ -352,8 +354,6 @@ resource "google_compute_backend_service" "run_backend_requesting" {
   protocol    = "HTTP"
   port_name   = "http"
   timeout_sec = 30
-
-  health_checks = [google_compute_https_health_check.test.id]
 
   backend {
     group = google_compute_region_network_endpoint_group.run_neg_requesting.id
@@ -366,11 +366,10 @@ resource "google_compute_backend_service" "run_backend_requesting" {
 resource "google_compute_url_map" "run_url_map" {
   name = "run-url-map"
 
-  default_service = google_compute_backend_service.run_backend_delivering.id
-
+  default_service = google_compute_backend_bucket.test.id
 
   host_rule {
-    hosts        = ["*"]
+    hosts        = ["${var.domain}"]
     path_matcher = "mysite"
   }
 
@@ -385,7 +384,7 @@ resource "google_compute_url_map" "run_url_map" {
 
     path_rule {
       paths   = ["/user", "/user/*"]
-      service = google_compute_backend_service.run_backend_requesting.id
+      service = google_compute_backend_service.run_backend_delivering.id
     }
   }
   depends_on = [
