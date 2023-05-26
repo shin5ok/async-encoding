@@ -1,12 +1,14 @@
 # Processing each movie asynchronously according to client requests and distribute it
 
 ## Prerequiste
-- Google Cloud Account enabled Google Cloud billing
-- Google Cloud Project
+- Google Cloud Account
+- Google Cloud Project enabled Google Cloud billing
+- Terraform v1.4.6 or later  
+([here](https://developer.hashicorp.com/terraform/downloads) to install the latest one)
 
 ## Procedure to setup the whole system
 ### 1. Prepare Google Cloud Project and environment variables
-Sign in to your project,
+Log in to your project,
 ```
 gcloud auth login --update-adc
 gcloud config set project <your project id>
@@ -43,27 +45,6 @@ Here's the command to confirm if the enablement has been completed.
 gcloud compute ssl-certificates list
 ```
 
-
-<!--### 3. (*Temporary*) Prepare GCS Proxy
-Prepare gcs-proxy to deliver objects that be protected in GCS to external user securely.  
-Set environment variables of your bucket name from terraform's one.
-```
-export GCS_BUCKET=$TF_VAR_gcs
-```
-
-Deploy it.
-```
-git clone https://github.com/shin5ok/gcs-proxy.git
-cd gcs-proxy/
-export REGION=$TF_VAR_region
-bash deploy.sh
-```
-
-Set environment variables of url the Cloud Run published for after procedure.
-```
-export BASE_URL=$(gcloud run services describe gcs-proxy --region=$REGION --format=json | jq .status.url -r)
-```
--->
 
 ### 3. Build applications and deploy them to Cloud Run.  
 Before doing here, make sure if you have Docker environment on your PC, Or you need to prepare it.
@@ -130,9 +111,8 @@ Click some links to see movies.
 - Download stored movies parallelly using command line  
 ```
 cd clients/deliver-requests/
-MOVIE_URL=$BASE_URL
 LIST_URL="$(gcloud run services describe delivering --region=$REGION --format=json | jq .status.url -r)/user"
-go run . -listurl=$LIST_URL -movieurl=$MOVIE_URL -procnum 10
+go run . -listurl=$LIST_URL -movieurl=$BASE_URL -procnum 10
 ```
 This example shows how you can download movies with parallelism 10.  
 
