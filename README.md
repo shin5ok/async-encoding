@@ -124,7 +124,7 @@ This is an example to send 10000 messages as request contains source image and c
 - See Cloud Logging, that will show how processing runs.  
 And then, you also see the progress in Firestore and GCS.
 
-- Open the site url that was assigned to **delivering** Cloud Run with your browser.
+- Open the site url that was assigned to **delivering** Cloud Run with your browser.  
 Click some links to see movies.  
 
 - Download stored movies parallelly using command line  
@@ -134,6 +134,7 @@ MOVIE_URL=$BASE_URL
 LIST_URL="$(gcloud run services describe delivering --region=$REGION --format=json | jq .status.url -r)/user"
 go run . -listurl=$LIST_URL -movieurl=$MOVIE_URL -procnum 10
 ```
+This example shows how you can download movies with parallelism 10.  
 
 ## 6. Cleanup
 See [here](https://cloud.google.com/resource-manager/docs/creating-managing-projects?shutting_down_projects&hl=ja#shutting_down_projects).
