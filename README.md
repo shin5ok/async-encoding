@@ -125,8 +125,9 @@ This is an example to send 10000 messages as request contains source image and c
 And then, you also see the progress in Firestore and GCS.
 
 - Open the site url that was assigned to **delivering** Cloud Run with your browser.
+Click some links to see movies.  
 
-- Download stored movies parallelly
+- Download stored movies parallelly using command line  
 ```
 cd clients/deliver-requests/
 MOVIE_URL=$BASE_URL
