@@ -4,7 +4,7 @@
 - Google Cloud Account
 - Google Cloud Project enabled Google Cloud billing
 - Terraform v1.4.6 or later  
-([here](https://developer.hashicorp.com/terraform/downloads) to install the latest one)
+(See [here](https://developer.hashicorp.com/terraform/downloads) to install the latest one)
 
 ## Procedure to setup the whole system
 ### 1. Prepare Google Cloud Project and environment variables
