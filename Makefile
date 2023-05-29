@@ -29,3 +29,7 @@ delivering:
 test-client:
 	( cd clients/requesting-clients && \
 		go build -o test-client . )
+
+.PHONY: clean
+clean:
+	rm -f terraform/*tfstate*
