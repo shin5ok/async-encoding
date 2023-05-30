@@ -162,8 +162,8 @@ resource "google_compute_region_instance_group_manager" "test" {
   name = "cutting-machines"
 
   base_instance_name         = "cutting"
-  region                     = "us-central1"
-  distribution_policy_zones  = ["us-central1-a", "us-central1-f"]
+  region                     = "${var.region}"
+  distribution_policy_zones  = split(",", var.zone)
 
   version {
     instance_template = google_compute_instance_template.test.self_link
