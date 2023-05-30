@@ -5,6 +5,7 @@
 - Google Cloud Project enabled Google Cloud billing
 - Terraform v1.4.6 or later  
 (See [here](https://developer.hashicorp.com/terraform/downloads) to install the latest one)
+- Docker running on your machine
 
 ## Procedure to setup the whole system
 ### 1. Prepare Google Cloud Project and environment variables
@@ -17,7 +18,7 @@ And then, set some environment variables to be used in the following step.
 ```
 export TF_VAR_domain=<your domain name>
 export TF_VAR_region=<GCP region ex: us-central1>
-export TF_VAR_zone=<GCP region ex:us-central1-a>
+export TF_VAR_zone=<GCP region ex: us-central1-a,us-central1-d>
 export TF_VAR_gcs=<your bucket name>
 export GOOGLE_CLOUD_PROJECT=<your project id>
 ```
