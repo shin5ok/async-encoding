@@ -18,7 +18,7 @@ And then, set some environment variables to be used in the following step.
 ```
 export TF_VAR_domain=<your domain name>
 export TF_VAR_region=<GCP region ex:asia-northeast1>
-export TF_VAR_zone=<GCP zones splited comma ex:asia-northeast1-a,asia-northeast1-b>
+export TF_VAR_zone=<GCP zones splited by comma ex:asia-northeast1-a,asia-northeast1-b>
 export TF_VAR_gcs=<your bucket name>
 export GOOGLE_CLOUD_PROJECT=<your project id>
 ```
