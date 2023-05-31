@@ -53,13 +53,13 @@ def _user_get(user_id: str, request: Request, user_agent = Header(default=None),
     return RedirectResponse(url, status_code=301)
 
 @app.get("/user")
-def _user(request: Request, user_agent = Header(default=None), json: bool = False, host = Header(default=None), s = Depends(get_coll)):
+def _user(request: Request, user_agent = Header(default=None), jsoned: bool = False, host = Header(default=None), s = Depends(get_coll)):
     r = s.limit(MAX_RECORD)
     lists = []
     for x in r.stream():
         d = x.to_dict()
         lists.append(Item(dst=d.get('Dst'), user_id=d.get('UserID'), key=x.id))
-    if json:
+    if jsoned:
         return ItemList(lists=lists).lists
     return Jinja2Templates(directory="templates").TemplateResponse("item_list.html", dict(lists=lists, request=request))
 
