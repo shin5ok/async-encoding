@@ -18,7 +18,7 @@ And then, set some environment variables to be used in the following step.
 ```
 export TF_VAR_domain=<your domain name>
 export TF_VAR_region=<GCP region ex: us-central1>
-export TF_VAR_zone=<GCP region ex: us-central1-a,us-central1-d>
+export TF_VAR_zone=<GCP zones splited comma ex: us-central1-a,us-central1-d>
 export TF_VAR_gcs=<your bucket name>
 export GOOGLE_CLOUD_PROJECT=<your project id>
 ```
@@ -29,7 +29,7 @@ If you don't have it, You can get your favorite one at *Cloud Domains*.
 Preparation and confimation to run totally.
 ```
 cd terraform/
-rm *tfstate*
+rm -f *tfstate*
 terraform plan
 ```
 Just type it to build the whole infrastructure.
@@ -45,7 +45,8 @@ Here's the command to confirm if the enablement has been completed.
 ```
 gcloud compute ssl-certificates list
 ```
-
+Once you see 'ACTIVE' on 'MANAGED_STATUS' line, you can expect to access apis with your domains.  
+You might see some error until provisioning has been done completely for a couple of minutes.
 
 ### 3. Build applications and deploy them to Cloud Run.  
 Before doing here, make sure if you have Docker environment on your PC, Or you need to prepare it.
