@@ -11,6 +11,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/schollz/progressbar/v3"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/sync/semaphore"
 )
@@ -27,7 +28,7 @@ func init() {
 	flag.Int64Var(&procnum, "procnum", 2, "")
 
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "ex: go run . -listurl=$LIST_URL -movieurl=https://example.com -procnum 10\n")
+		fmt.Fprintf(os.Stderr, "ex: go run . -listurl=$LIST_URL -movieurl=https://example.com/user -procnum 10\n")
 		flag.PrintDefaults()
 	}
 
@@ -37,14 +38,14 @@ func init() {
 func getUrlList() []map[string]string {
 	res, err := http.Get(listUrl)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Get error", err)
 	}
 	defer res.Body.Close()
 
 	m := []map[string]string{}
 	err = json.NewDecoder(res.Body).Decode(&m)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("JSON encode error", err)
 	}
 	return m
 }
@@ -86,11 +87,22 @@ func doSomething(ctx context.Context, url string) {
 		log.Println(err)
 	} else {
 		defer res.Body.Close()
-		_, err = io.ReadAll(res.Body)
+		f := io.Discard
+		ch := make(chan struct{})
+		bar := getBar(ch, res.ContentLength)
+		_, err = io.Copy(io.MultiWriter(f, bar), res.Body)
 		if err != nil {
 			log.Println(err)
 		}
 	}
 
 	ctx.Done()
+}
+
+func getBar(ch chan struct{}, contentLength int64) *progressbar.ProgressBar {
+	bar := progressbar.DefaultBytes(
+		contentLength,
+		"downloading",
+	)
+	return bar
 }
