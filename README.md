@@ -113,7 +113,7 @@ Click some links to see movies.
 - Download stored movies parallelly using command line  
 ```
 cd clients/deliver-requests/
-LIST_URL="$(gcloud run services describe delivering --region=$REGION --format=json | jq .status.url -r)/user"
+LIST_URL="${BASE_URL}/user?jsoned=1"
 go run . -listurl=$LIST_URL -movieurl=$BASE_URL -procnum 10
 ```
 This example shows how you can download movies with parallelism 10.  
