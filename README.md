@@ -17,13 +17,13 @@ gcloud config set project <your project id>
 And then, set some environment variables to be used in the following step.
 ```
 export TF_VAR_domain=<your domain name>
-export TF_VAR_region=<GCP region ex: us-central1>
-export TF_VAR_zone=<GCP zones splited comma ex: us-central1-a,us-central1-d>
+export TF_VAR_region=<GCP region ex:asia-northeast1>
+export TF_VAR_zone=<GCP zones splited comma ex:asia-northeast1-a,asia-northeast1-b>
 export TF_VAR_gcs=<your bucket name>
 export GOOGLE_CLOUD_PROJECT=<your project id>
 ```
 Note: Domain name must be one you manage.  
-If you don't have it, You can get your favorite one at *Cloud Domains*.
+If you don't have any domains, You can get your favorite one at *Cloud Domains*.
 
 ### 2. Build infrastructure
 Preparation and confimation to run totally.
