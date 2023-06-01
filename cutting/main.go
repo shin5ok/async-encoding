@@ -64,9 +64,6 @@ func pullAndConvert(projectID, subscName string) error {
 	sub.ReceiveSettings.NumGoroutines = 2
 	sub.ReceiveSettings.MaxOutstandingMessages = 1
 
-	// ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
-	// defer cancel()
-
 	// Receive blocks until the context is cancelled or an error occurs.
 	err = sub.Receive(ctx, doConvert)
 	if err != nil {
