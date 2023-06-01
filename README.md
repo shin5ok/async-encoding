@@ -111,12 +111,13 @@ And then, you also see the progress in Firestore and GCS.
 Click some links to see movies.  
 
 - Download stored movies parallelly using command line  
+This example shows how you can download movies with parallelism 10.  
 ```
 cd clients/deliver-requests/
 LIST_URL="${BASE_URL}/user?jsoned=1"
 go run . -listurl=$LIST_URL -movieurl=$BASE_URL -procnum 10
 ```
-This example shows how you can download movies with parallelism 10.  
+Note: It might be slow or some errors by too many urls from $LIST_API because all records will be got at once.
 
 ## 6. Cleanup
 See [here](https://cloud.google.com/resource-manager/docs/creating-managing-projects?shutting_down_projects&hl=ja#shutting_down_projects).
