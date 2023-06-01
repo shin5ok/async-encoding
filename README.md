@@ -1,5 +1,24 @@
 # Processing each movie asynchronously according to client requests and distribute it
 
+
+## Code structure
+- **clients/requesting-clients**(Golang)  
+Client example to request a lot parallelly
+- **clients/delivering-clients**(Golang)  
+Client example to deliver movies parallelly
+- **cutting**(Golang)  
+Worker to process image according to each request
+- **delivering**(Python)  
+Web Page/API to distribute movies to each client
+- **requesting**(Python)  
+Web API to accept requests from each client
+- **terraform**(HCL)  
+Terraform tf files
+- **Makefile**  
+Command utils
+- **movies.txt**  
+Sample movies as original source
+
 ## Prerequiste
 - Google Cloud Account
 - Google Cloud Project enabled Google Cloud billing
