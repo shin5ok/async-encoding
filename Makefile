@@ -25,11 +25,6 @@ delivering:
 	docker push $(BASE_REPO)/delivering
 	gcloud run deploy delivering --region=$(REGION) --set-env-vars=BASE_URL=$(BASE_URL),PROJECT_ID=$(GOOGLE_CLOUD_PROJECT) --image=$(BASE_REPO)/delivering --allow-unauthenticated
 
-.PHONY: test-client
-test-client:
-	( cd clients/requesting-clients && \
-		go build -o test-client . )
-
 .PHONY: clean
 clean:
 	rm -f terraform/*tfstate*
