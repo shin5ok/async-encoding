@@ -22,8 +22,9 @@ export TF_VAR_zone=<GCP zones splited by comma ex:asia-northeast1-a,asia-northea
 export TF_VAR_gcs=<your bucket name>
 export GOOGLE_CLOUD_PROJECT=<your project id>
 ```
-Note: Domain name must be one you manage.  
-If you don't have any domains, You can get your favorite one at *Cloud Domains*.
+Note: Domain name must be one you own in public.  
+If you don't have any domains, You can get your favorite one at *Cloud Domains*.  
+You can also use sub domain.
 
 ### 2. Build infrastructure
 Preparation and confimation to run totally.
