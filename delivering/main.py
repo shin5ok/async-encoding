@@ -16,7 +16,7 @@ COLLECTION = os.environ.get("COLLECTION", "data")
 BASE_URL = os.environ.get("BASE_URL", "https://example.com")
 PORT = os.environ.get("PORT", "8080")
 
-MAX_RECORD = 100
+MAX_RECORD = int(os.environ.get("MAX_RECORD", "100"))
 
 logger = logging.getLogger(__name__)
 handler = logging.StreamHandler(sys.stdout)
