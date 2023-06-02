@@ -12,13 +12,12 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/google/uuid"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/sync/semaphore"
 
-	"github.com/briandowns/spinner"
+	"github.com/schollz/progressbar/v3"
 )
 
 var (
@@ -91,10 +90,10 @@ func main() {
 
 	sem := semaphore.NewWeighted(procNum)
 
-	s := spinner.New(spinner.CharSets[9], 100*time.Millisecond)
-	s.Start()
+	bar := progressbar.Default(int64(requestNum))
 
 	for i := 0; i < requestNum; i++ {
+		bar.Add(1)
 		sem.Acquire(ctx, 1)
 		params := genParams()
 		debugPrint(params)
@@ -109,12 +108,9 @@ func main() {
 		log.Println(err)
 	}
 
-	s.Stop()
 }
 
 func doSomething(ctx context.Context, url string, data map[string]any) {
-
-	time.Sleep(time.Second * 1)
 
 	params := data
 	dataJson, _ := json.Marshal(params)
