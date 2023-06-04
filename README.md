@@ -76,11 +76,11 @@ Before doing here, make sure if you have Docker environment on your PC, Or you n
 make repo
 ```
 
-- **requesting application** that is to accept request from each user.
+- **requesting application** that is to accept requests from each user.
 ```
 make requesting
 ```
-- **delivering application** that is to deliver movie to each appropriate user.
+- **delivering application** that is to deliver movies to each appropriate user.
 ```
 export BASE_URL="https://${TF_VAR_domain}"
 make delivering
