@@ -21,6 +21,7 @@ import (
 var (
 	listUrl, movieUrl string
 	procnum           int64
+	auth              bool
 )
 
 func init() {
@@ -28,6 +29,7 @@ func init() {
 	flag.StringVar(&listUrl, "listurl", "", "")
 	flag.StringVar(&movieUrl, "movieurl", "", "")
 	flag.Int64Var(&procnum, "procnum", 2, "")
+	flag.BoolVar(&auth, "auth", false, "")
 
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "ex: go run . -listurl=$LIST_URL -movieurl=https://example.com/user -procnum 10\n")
@@ -66,7 +68,7 @@ func main() {
 		url := l["dst"]
 		sem.Acquire(ctx, 1)
 		e.Go(func() error {
-			doSomething(ctx, url)
+			doSomething(ctx, url, auth)
 			sem.Release(1)
 			return nil
 		})
@@ -77,14 +79,24 @@ func main() {
 	}
 }
 
-func doSomething(ctx context.Context, url string) {
+func doSomething(ctx context.Context, url string, auth bool) {
 
 	time.Sleep(time.Second * 1)
 	fullUrl := fmt.Sprintf("%s/%s", movieUrl, url)
 
-	client, _ := idtoken.NewClient(ctx, url)
-	req, err := http.NewRequest("GET", fullUrl, nil)
+	var client *http.Client
+	if auth {
+		var err error
+		client, err = idtoken.NewClient(ctx, fullUrl)
+		if err != nil {
+			log.Print(err)
+			return
+		}
+	} else {
+		client = &http.Client{}
+	}
 
+	req, err := http.NewRequest("GET", fullUrl, nil)
 	if err != nil {
 		log.Print(err)
 		return
@@ -103,6 +115,9 @@ func doSomething(ctx context.Context, url string) {
 		_, err = io.Copy(io.MultiWriter(f, bar), res.Body)
 		if err != nil {
 			log.Println(err)
+		}
+		if res.StatusCode != 200 {
+			log.Println("Error", res.StatusCode, req.Header, fullUrl)
 		}
 	}
 
