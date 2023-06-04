@@ -437,3 +437,12 @@ output "url_of_delivering" {
 output "external_ip_attached_to_gclb" {
   value = google_compute_global_address.reserved_ip.address
 }
+
+output "url_of_cloud_run_for_delivering" {
+  value = google_cloud_run_service.delivering.status[0].url + "/user"
+}
+
+output "url_of_cloud_run_for_requesting" {
+  value = google_cloud_run_service.requesting.status[0].url + "/request"
+}
+
