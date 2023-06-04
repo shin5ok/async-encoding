@@ -143,7 +143,7 @@ func getAccessToken() string {
 		log.Println("Credential Error", err)
 		return ""
 	}
-	t, _ := credentials.TokenSource.Token()
+	t, err := credentials.TokenSource.Token()
 	if err != nil {
 		fmt.Print(err)
 	}
