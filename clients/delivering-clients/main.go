@@ -14,6 +14,8 @@ import (
 	"github.com/schollz/progressbar/v3"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/sync/semaphore"
+
+	"google.golang.org/api/idtoken"
 )
 
 var (
@@ -80,11 +82,19 @@ func doSomething(ctx context.Context, url string) {
 	time.Sleep(time.Second * 1)
 	fullUrl := fmt.Sprintf("%s/%s", movieUrl, url)
 
-	fmt.Println(fullUrl)
+	client, _ := idtoken.NewClient(ctx, url)
+	req, err := http.NewRequest("GET", fullUrl, nil)
 
-	res, err := http.Get(fullUrl)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+
+	res, err := client.Do(req)
+
 	if err != nil {
 		log.Println(err)
+		return
 	} else {
 		defer res.Body.Close()
 		f := io.Discard
