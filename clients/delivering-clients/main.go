@@ -11,7 +11,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/coocood/freecache"
 	"github.com/schollz/progressbar/v3"
 	auth "golang.org/x/oauth2/google"
 	"golang.org/x/sync/errgroup"
@@ -23,12 +22,9 @@ var (
 	procnum           int64
 	onAuth            bool
 	accessToken       string
-	cache             *freecache.Cache
 )
 
 func init() {
-
-	cache = freecache.NewCache(1024 * 1024 * 10)
 
 	flag.StringVar(&listUrl, "listurl", "", "")
 	flag.StringVar(&movieUrl, "movieurl", "", "")
