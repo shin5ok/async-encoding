@@ -108,7 +108,8 @@ foobar.mp4
 ```
 You will make it simply by hit command in the right directory,
 ```
-ls *.mp4 > YOUR_DIRECTORY/movies.txt
+cd YOUR_MOVIE_DIRECTORY/
+ls *.mp4 > movies.txt
 ```
 
 ###  5. Test it
