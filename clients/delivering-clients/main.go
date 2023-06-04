@@ -94,7 +94,7 @@ func doSomething(ctx context.Context, url string, accessToken string, onAuth boo
 	}
 	if onAuth {
 		token := getAccessToken()
-		fmt.Println("token", token)
+		// fmt.Println("token", token)
 		req.Header.Add("Authorization", "Bearer "+token)
 	}
 
