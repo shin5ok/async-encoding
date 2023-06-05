@@ -232,11 +232,11 @@ resource "google_cloud_run_service_iam_binding" "run_iam_binding_requesting" {
   ]
 }
 
-// resource "google_storage_bucket_iam_member" "test" {
-//   bucket = google_storage_bucket.test.name
-//   role = "roles/storage.objectViewer"
-//   member = "allUsers"
-// }
+resource "google_storage_bucket_iam_member" "test" {
+  bucket = google_storage_bucket.test.name
+  role = "roles/storage.objectViewer"
+  member = "allUsers"
+}
 
 resource "google_firestore_database" "test" {
   project                     = var.project
