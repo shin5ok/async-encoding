@@ -232,11 +232,11 @@ resource "google_cloud_run_service_iam_binding" "run_iam_binding_requesting" {
   ]
 }
 
-resource "google_storage_bucket_iam_member" "test" {
-  bucket = google_storage_bucket.test.name
-  role = "roles/storage.objectViewer"
-  member = "allUsers"
-}
+// resource "google_storage_bucket_iam_member" "test" {
+//   bucket = google_storage_bucket.test.name
+//   role = "roles/storage.objectViewer"
+//   member = "allUsers"
+// }
 
 resource "google_firestore_database" "test" {
   project                     = var.project
@@ -439,10 +439,10 @@ output "external_ip_attached_to_gclb" {
 }
 
 output "url_of_cloud_run_for_delivering" {
-  value = google_cloud_run_service.delivering.status[0].url + "/user"
+  value = "${google_cloud_run_service.delivering.status[0].url}/user"
 }
 
 output "url_of_cloud_run_for_requesting" {
-  value = google_cloud_run_service.requesting.status[0].url + "/request"
+  value = "${google_cloud_run_service.requesting.status[0].url}/request"
 }
 
