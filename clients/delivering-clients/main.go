@@ -22,6 +22,8 @@ var (
 	procnum           int64
 	onAuth            bool
 	accessToken       string
+	tokenExpire       = time.Second * 10
+	tokenGenTime      time.Time
 )
 
 func init() {
@@ -64,8 +66,8 @@ func main() {
 
 	sem := semaphore.NewWeighted(procnum)
 
-	accessToken := getAccessToken()
 	for _, l := range list {
+		accessToken := getAccessToken()
 		url := l["dst"]
 		sem.Acquire(ctx, 1)
 		e.Go(func() error {
@@ -130,7 +132,7 @@ func getBar(ch chan struct{}, contentLength int64) *progressbar.ProgressBar {
 
 func getAccessToken() string {
 
-	if accessToken != "" {
+	if tokenGenTime.Sub(time.Now()) < tokenExpire && accessToken != "" {
 		return accessToken
 	}
 
@@ -148,6 +150,8 @@ func getAccessToken() string {
 		fmt.Print(err)
 	}
 	accessToken = t.AccessToken
+
+	tokenGenTime = time.Now()
 
 	return accessToken
 
