@@ -22,7 +22,7 @@ var (
 	procnum           int64
 	onAuth            bool
 	accessToken       string
-	tokenExpire       = time.Second * 10
+	tokenExpire       = time.Second * 60
 	tokenGenTime      time.Time
 )
 
@@ -96,7 +96,6 @@ func doSomething(ctx context.Context, url string, accessToken string, onAuth boo
 	}
 	if onAuth {
 		token := getAccessToken()
-		// fmt.Println("token", token)
 		req.Header.Add("Authorization", "Bearer "+token)
 	}
 
@@ -132,10 +131,12 @@ func getBar(ch chan struct{}, contentLength int64) *progressbar.ProgressBar {
 
 func getAccessToken() string {
 
-	if tokenGenTime.Sub(time.Now()) < tokenExpire && accessToken != "" {
+	delta := time.Now().Sub(tokenGenTime)
+	if delta < tokenExpire && accessToken != "" {
 		return accessToken
 	}
 
+	log.Println("trying to get access token")
 	ctx := context.Background()
 	scopes := []string{
 		"https://www.googleapis.com/auth/cloud-platform",
@@ -150,7 +151,6 @@ func getAccessToken() string {
 		fmt.Print(err)
 	}
 	accessToken = t.AccessToken
-
 	tokenGenTime = time.Now()
 
 	return accessToken
