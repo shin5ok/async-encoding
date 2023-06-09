@@ -28,3 +28,7 @@ delivering:
 .PHONY: clean
 clean:
 	rm -f terraform/*tfstate*
+
+.PHONY: infra
+infra:
+	( cd terraform; terraform apply -auto-approve )
