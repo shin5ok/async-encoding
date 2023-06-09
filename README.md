@@ -128,19 +128,21 @@ This is an example to send 10000 messages as request contains source image and c
 - See Cloud Logging, that will show how processing runs.  
 And then, you also see the progress in Firestore and GCS.
 
+<!--
 - Open the site url by your browser.  
 Show the url to access as below,
 ```
 echo ${BASE_URL}/user
 ```
 Click some links to see movies.  
+-->
 
 - Download stored movies parallelly using command line  
 This example shows how you can download movies with parallelism 10.  
 ```
 cd clients/deliver-requests/
 LIST_URL="${BASE_URL}/user?jsoned=1"
-go run . -listurl=$LIST_URL -movieurl=$BASE_URL -procnum 10
+go run . -listurl=$LIST_URL -movieurl=$BASE_URL -procnum 10 -auth
 ```
 Note: It might be slow or some errors by too many urls from $LIST_API because all records will be got at once.
 
