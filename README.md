@@ -128,14 +128,20 @@ This is an example to send 10000 messages as request contains source image and c
 - See Cloud Logging, that will show how processing runs.  
 And then, you also see the progress in Firestore and GCS.
 
-<!--
 - Open the site url by your browser.  
 Show the url to access as below,
 ```
 echo ${BASE_URL}/user
 ```
-Click some links to see movies.  
--->
+You need to specify "Authorization" header including access token to open any movies.  
+It would be useful to use Chrome extention like [this](https://chromewebstore.google.com/detail/idgpnmonknjnojddfkpgkljpfnnfcklj).  
+You may add header as below
+```
+Authorization: Bearer <your access token>
+```
+You can get an access token by hitting command "gcloud auth print-access-token", which is expiring in 1 hour.
+
+After configuring that, Click some links to see movies.  
 
 - Download stored movies parallelly using command line  
 This example shows how you can download movies with parallelism 10.  
