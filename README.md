@@ -139,8 +139,11 @@ You may add header as below
 ```
 Authorization: Bearer <your access token>
 ```
-You can get an access token by hitting command "gcloud auth print-access-token", which is expiring in 1 hour.
-
+You can get an access token by hitting command 
+```
+gcloud auth print-access-token
+```
+which is expiring in 1 hour.  
 After configuring that, Click some links to see movies.  
 
 - Download stored movies parallelly using command line  
