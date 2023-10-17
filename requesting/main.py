@@ -16,8 +16,8 @@ handler = logging.StreamHandler(sys.stdout)
 logger.addHandler(handler)
 logger.setLevel(logging.DEBUG)
 
-PORT = os.environ.get("PORT", "8080")
 PROJECT_ID = os.environ.get("PROJECT_ID")
+PORT = os.environ.get("PORT", "8080")
 TOPIC = os.environ.get("TOPIC")
 
 class ProcessRequest(BaseModel):
@@ -56,9 +56,8 @@ def _request(
     return process_request
 
 if __name__ == '__main__':
-    port = os.environ.get("PORT", PORT)
     options = {
-            'port': int(port),
+            'port': int(PORT),
             'host': '0.0.0.0',
             'workers': 8,
             'reload': True,
