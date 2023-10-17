@@ -19,6 +19,9 @@ Command utils
 - **movies.txt**  
 Sample movies as original source
 
+## Image
+![](architecture-0.png "image")
+
 ## Prerequiste
 - Google Cloud Account
 - Google Cloud Project enabled Google Cloud billing
