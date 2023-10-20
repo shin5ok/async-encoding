@@ -5,7 +5,7 @@ import uvicorn
 import logging
 import json
 from pydantic import BaseModel, Field, EmailStr
-from typing import List, Optional
+from typing import List, Optional,Union
 from fastapi.responses import RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 import jinja2
@@ -39,11 +39,17 @@ class ItemList(BaseModel):
     lists: List[Item]
 
 @app.get("/test")
-def _check():
+def _check() -> dict:
     return {}
 
 @app.get("/user/{user_id}")
-def _user_get(user_id: str, request: Request, user_agent = Header(default=None), host = Header(default=None), s = Depends(get_coll)):
+def _user_get(
+                user_id: str,
+                request: Request,
+                user_agent = Header(default=None),
+                host = Header(default=None),
+                s = Depends(get_coll)
+            ) -> Union[RedirectResponse, Response]:
     doc = s.document(user_id)
     print(doc.get().to_dict())
     dst = doc.get().get("Dst")
@@ -53,7 +59,13 @@ def _user_get(user_id: str, request: Request, user_agent = Header(default=None),
     return RedirectResponse(url, status_code=301)
 
 @app.get("/user")
-def _user(request: Request, user_agent = Header(default=None), jsoned: bool = False, host = Header(default=None), s = Depends(get_coll)):
+def _user(
+            request: Request,
+            user_agent = Header(default=None),
+            jsoned: bool = False,
+            host = Header(default=None),
+            s = Depends(get_coll)
+        ) -> Union[list, str]:
     r = s.limit(MAX_RECORD)
     lists = []
     for x in r.stream():
