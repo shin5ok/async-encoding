@@ -10,7 +10,6 @@ from fastapi.responses import RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 from google.cloud import pubsub_v1
 
-
 logger = logging.getLogger(__name__)
 handler = logging.StreamHandler(sys.stdout)
 logger.addHandler(handler)
@@ -41,8 +40,8 @@ def _request(
         response: Response,
         user_agent = Header(default=None),
         host = Header(default=None)
-    ) -> Union[ProcessRequest, dict]:
-    print(process_request.dict())
+    ) -> ProcessRequest | dict:
+    print(process_request.model_dump())
 
     try:
         data = json.dumps(process_request.model_dump())
