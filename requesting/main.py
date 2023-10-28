@@ -5,7 +5,7 @@ import uvicorn
 import logging
 import json
 from pydantic import BaseModel, Field, EmailStr
-from typing import List, Optional
+from typing import List
 from fastapi.responses import RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 from google.cloud import pubsub_v1
@@ -31,7 +31,7 @@ publisher = pubsub_v1.PublisherClient()
 topic_name = f'projects/{PROJECT_ID}/topics/{TOPIC}'
 
 @app.get("/test")
-def _check():
+def _check() -> dict:
     return {}
 
 @app.post("/request")
@@ -41,11 +41,11 @@ def _request(
         response: Response,
         user_agent = Header(default=None), 
         host = Header(default=None)
-    ):
-    print(process_request.dict())
+    ) -> ProcessRequest | dict:
+    print(process_request.model_dump())
 
     try:
-        data = json.dumps(process_request.dict())
+        data = json.dumps(process_request.model_dump())
         future = publisher.publish(topic_name, data.encode('utf8'))
         future.result()
     except Exception as e:
